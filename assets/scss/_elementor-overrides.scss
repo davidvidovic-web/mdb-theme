@@ -1,0 +1,119 @@
+/*
+ * Elementor Overrides SCSS
+ * 
+ * This file contains custom SCSS overrides for Elementor elements and widgets.
+ * Use this file to customize Elementor's default styling without modifying
+ * the main theme files.
+ */
+
+// Import variables for use in this file
+@use 'variables' as *;
+
+// ==========================================================================
+// Elementor Global Overrides
+// ==========================================================================
+
+// Container and Section Overrides
+.elementor-container {
+    // Add your container customizations here
+    // Example: max-width: $container-max-width;
+}
+
+.elementor-section {
+    // Add your section customizations here
+    // Example: padding: $spacing-lg 0;
+}
+
+// ==========================================================================
+// Elementor Widget Overrides
+// ==========================================================================
+
+// Heading Widget
+.elementor-widget-heading {
+    // Add your heading widget customizations here
+    // Example:
+    // h1, h2, h3, h4, h5, h6 {
+    //     font-family: $font-primary;
+    //     color: $primary-color;
+    // }
+}
+
+// Text Editor Widget
+.elementor-widget-text-editor {
+    // Add your text editor widget customizations here
+    // Example:
+    // p {
+    //     font-size: $font-size-base;
+    //     line-height: $line-height-normal;
+    //     color: $gray-700;
+    // }
+}
+
+// Button Widget
+.elementor-widget-button {
+    // Add your button widget customizations here
+    // Example:
+    // .elementor-button {
+    //     background-color: $primary-color;
+    //     border-radius: $border-radius;
+    //     padding: $spacing-sm $spacing-lg;
+    //     transition: all $transition-speed $transition-easing;
+    //     
+    //     &:hover {
+    //         background-color: $primary-dark;
+    //         transform: translateY(-2px);
+    //         box-shadow: $shadow-lg;
+    //     }
+    // }
+}
+
+// Image Widget
+.elementor-widget-image {
+    // Add your image widget customizations here
+    // Example:
+    // img {
+    //     border-radius: $border-radius;
+    //     box-shadow: $shadow-sm;
+    // }
+}
+
+// ==========================================================================
+// Responsive Overrides
+// ==========================================================================
+
+// Tablet Styles
+@media (max-width: $breakpoint-md) {
+    .elementor-container {
+        // Add your tablet-specific Elementor overrides here
+        // Example: padding: 0 $spacing-md;
+    }
+}
+
+// Mobile Styles
+@media (max-width: $breakpoint-sm) {
+    .elementor-container {
+        // Add your mobile-specific Elementor overrides here
+        // Example: padding: 0 $spacing-sm;
+    }
+    
+    .elementor-widget-heading {
+        // Mobile heading adjustments
+        // Example:
+        // h1 { font-size: $font-size-xl; }
+        // h2 { font-size: $font-size-lg; }
+    }
+}
+
+// ==========================================================================
+// Custom Elementor Classes
+// ==========================================================================
+
+// Add custom classes for Elementor elements here
+.custom-elementor-class {
+    // Your custom styles using SCSS variables and mixins
+    // Example:
+    // background-color: $accent-color;
+    // padding: $spacing-lg;
+    // border-radius: $border-radius-lg;
+    // box-shadow: $shadow-md;
+}

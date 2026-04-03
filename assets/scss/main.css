@@ -1,0 +1,157 @@
+/*
+ * Main SCSS File for MDB Theme
+ * 
+ * This file serves as the main entry point for Sass compilation.
+ * Import all your partial files here and compile to /assets/css/main.css
+ */
+/*
+ * SCSS Variables for MDB Theme
+ * 
+ * Define all theme variables here for consistency across the project.
+ */
+/*
+ * Mixins for MDB Theme
+ * 
+ * Reusable SCSS mixins for common styling patterns.
+ */
+/*
+ * Global Styles
+ * 
+ * Global CSS rules that apply throughout the theme.
+ * These styles will be compiled into the main.css file.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/*
+ * Main SCSS File for MDB Theme
+ * 
+ * This file serves as the main entry point for Sass compilation.
+ * Import all your partial files here and compile to /assets/css/main.css
+ */
+/*
+ * Elementor Overrides SCSS
+ * 
+ * This file contains custom SCSS overrides for Elementor elements and widgets.
+ * Use this file to customize Elementor's default styling without modifying
+ * the main theme files.
+ */
+/*
+ * Main SCSS File for MDB Theme
+ * 
+ * This file serves as the main entry point for Sass compilation.
+ * Import all your partial files here and compile to /assets/css/main.css
+ */
+.mdb-checkout-progress {
+  width: 100%;
+  margin-bottom: 0;
+  padding: 1rem 0;
+}
+.mdb-checkout-progress__list {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.mdb-checkout-progress__list::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #dee2e6;
+  z-index: 0;
+  transform: translateY(-50%);
+}
+.mdb-checkout-progress__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  text-align: center;
+}
+.mdb-checkout-progress__step--active .mdb-checkout-progress__indicator {
+  border-color: #444d62;
+  background-color: #444d62;
+  color: #ffffff;
+  font-weight: bold;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(0, 124, 186, 0.2);
+}
+.mdb-checkout-progress__step--active .mdb-checkout-progress__label {
+  color: #005a87;
+  font-weight: 700;
+}
+.mdb-checkout-progress__step--completed .mdb-checkout-progress__indicator {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #ffffff;
+}
+.mdb-checkout-progress__step--completed .mdb-checkout-progress__label {
+  color: #28a745;
+  font-weight: 600;
+}
+.mdb-checkout-progress__indicator {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 2px solid #ced4da;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  color: #6c757d;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+.mdb-checkout-progress__label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: transparent;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.mdb-checkout-hero {
+  background-color: #f8f9fa;
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.mdb-checkout-hero h1 {
+  margin-bottom: 2rem;
+  color: #005a87;
+}
+.mdb-checkout-hero .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}/*# sourceMappingURL=main.css.map */

@@ -1,0 +1,1808 @@
+@use "sass:color";
+@use "../variables" as *;
+
+// ==========================================================================
+// My Account — MDB Theme
+// Covers: layout, sidebar nav, dashboard, login/register form,
+//         and general account content tables/forms.
+// ==========================================================================
+
+// --------------------------------------------------------------------------
+// Layout — two-column sidebar + content
+// --------------------------------------------------------------------------
+
+.mdb-account {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.mdb-account__sidebar {
+  flex: 0 0 220px;
+  min-width: 220px;
+}
+
+.mdb-account__content {
+  flex: 1;
+  min-width: 0;
+
+  // Section headings inside content
+  h2,
+  h3 {
+    color: $primary-dark;
+    font-weight: $font-weight-semibold;
+    margin-top: 0;
+  }
+}
+
+// --------------------------------------------------------------------------
+// Sidebar navigation
+// --------------------------------------------------------------------------
+
+.mdb-account-nav {
+  background-color: $white;
+  border: 1px solid $gray-200;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba($primary-color, 0.07);
+  width: 100% !important;
+}
+
+.mdb-account-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mdb-account-nav__item {
+  border-bottom: 1px solid $gray-200;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.mdb-account-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.5rem;
+  color: $primary-color;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    padding-left 0.2s ease;
+
+  // Icon via ::before pseudo-element
+  &::before {
+    content: "";
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    opacity: 0.7;
+  }
+
+  &:hover {
+    background-color: rgba($primary-light, 0.08);
+    color: $primary-dark;
+    padding-left: 1.5rem;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &--active {
+    background-color: rgba($teal-accent, 0.1);
+    color: $teal-accent;
+    font-weight: $font-weight-semibold;
+    border-left: 3px solid $teal-accent;
+    padding-left: calc(1.5rem - 3px); // compensate for border
+
+    &::before {
+      opacity: 1;
+    }
+
+    &:hover {
+      background-color: rgba($teal-accent, 0.15);
+      color: $teal-accent;
+      padding-left: calc(1.5rem - 3px);
+    }
+  }
+}
+
+// Nav icon definitions (inline SVG masks via CSS)
+// Using simple Unicode-friendly shapes via SVG data URIs
+
+$icon-dashboard: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/%3E%3C/svg%3E";
+$icon-orders: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z'/%3E%3C/svg%3E";
+$icon-downloads: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E";
+$icon-address: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E";
+$icon-payment: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z'/%3E%3C/svg%3E";
+$icon-account: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+$icon-logout: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z'/%3E%3C/svg%3E";
+
+.mdb-icon-dashboard::before {
+  -webkit-mask-image: url($icon-dashboard);
+  mask-image: url($icon-dashboard);
+}
+.mdb-icon-orders::before {
+  -webkit-mask-image: url($icon-orders);
+  mask-image: url($icon-orders);
+}
+.mdb-icon-downloads::before {
+  -webkit-mask-image: url($icon-downloads);
+  mask-image: url($icon-downloads);
+}
+.mdb-icon-address::before {
+  -webkit-mask-image: url($icon-address);
+  mask-image: url($icon-address);
+}
+.mdb-icon-payment::before {
+  -webkit-mask-image: url($icon-payment);
+  mask-image: url($icon-payment);
+}
+.mdb-icon-account::before {
+  -webkit-mask-image: url($icon-account);
+  mask-image: url($icon-account);
+}
+.mdb-icon-logout::before {
+  -webkit-mask-image: url($icon-logout);
+  mask-image: url($icon-logout);
+}
+.mdb-icon-default::before {
+  -webkit-mask-image: url($icon-account);
+  mask-image: url($icon-account);
+}
+
+// --------------------------------------------------------------------------
+// Dashboard
+// --------------------------------------------------------------------------
+
+.mdb-account-dashboard {
+  .mdb-account-dashboard__greeting {
+    font-size: $font-size-lg;
+    color: $primary-color;
+    margin-bottom: 0.5rem;
+
+    strong {
+      color: $primary-dark;
+    }
+
+    a {
+      color: $teal-accent;
+      font-weight: $font-weight-medium;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .mdb-account-dashboard__intro {
+    color: $secondary-color;
+    margin-bottom: 2rem;
+    line-height: $line-height-loose;
+
+    a {
+      color: $primary-dark;
+      font-weight: $font-weight-medium;
+      text-decoration: none;
+
+      &:hover {
+        color: $teal-accent;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+table.shop_table {
+  background-color: $white;
+  border: none !important;
+  border-radius: 10px;
+  border: none !important;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba($primary-color, 0.07);
+}
+
+.mdb-account-dashboard__quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.mdb-account-quicklink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  background-color: $white;
+  border: 1px solid $gray-200;
+  border-radius: 10px;
+  text-decoration: none;
+  color: $primary-color;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba($primary-color, 0.06);
+
+  &:hover {
+    border-color: $teal-accent;
+    background-color: rgba($teal-accent, 0.06);
+    color: $teal-accent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($teal-accent, 0.15);
+  }
+
+  .mdb-account-quicklink__icon {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    transition: color 0.2s ease;
+  }
+
+  // Apply the same icons to quick-link spans
+  .mdb-icon-orders {
+    -webkit-mask-image: url($icon-orders);
+    mask-image: url($icon-orders);
+  }
+  .mdb-icon-address {
+    -webkit-mask-image: url($icon-address);
+    mask-image: url($icon-address);
+  }
+  .mdb-icon-account {
+    -webkit-mask-image: url($icon-account);
+    mask-image: url($icon-account);
+  }
+  .mdb-icon-downloads {
+    -webkit-mask-image: url($icon-downloads);
+    mask-image: url($icon-downloads);
+  }
+}
+
+// --------------------------------------------------------------------------
+// Login / Register forms
+// --------------------------------------------------------------------------
+
+// Page-level wrapper — breathing room from header and footer on the entire
+// my-account page (both login/register and logged-in dashboard views).
+.woocommerce-account {
+  #primary,
+  .site-main {
+    padding-top: 4rem;
+    padding-bottom: 5rem;
+  }
+}
+
+.mdb-account-login {
+  max-width: 480px;
+  margin: 0 auto;
+
+  // When tabs are shown, widen slightly so both tabs sit comfortably.
+  &--tabs {
+    max-width: 520px;
+  }
+}
+
+// --------------------------------------------------------------------------
+// Tab bar — Sign In / Create Account
+// --------------------------------------------------------------------------
+
+.mdb-auth-tabs {
+  display: flex;
+  border-bottom: 2px solid $gray-200;
+  margin-bottom: 0; // card sits directly below
+}
+
+.mdb-auth-tab {
+  flex: 1;
+  padding: 0.9rem 1rem;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  border-bottom: none;
+  color: $gray-600;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  text-align: center;
+
+  &:first-child {
+    border-radius: 10px 0 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 10px 0 0;
+    border-left: none;
+  }
+
+  &--active {
+    background: $white;
+    color: $primary-dark;
+    border-bottom: 2px solid $white; // "lifts" off the border below
+    margin-bottom: -2px;
+  }
+
+  &:hover:not(&--active) {
+    background: $white;
+    color: $primary-color;
+  }
+}
+
+// --------------------------------------------------------------------------
+// Panels — one shown at a time
+// --------------------------------------------------------------------------
+
+.mdb-auth-panel {
+  display: none;
+
+  &--active {
+    display: block;
+  }
+}
+
+.mdb-account-login__card {
+  background-color: $white;
+  border: 1px solid $gray-200;
+  border-top: none; // tabs sit above, already have a border
+  border-radius: 0 0 10px 10px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 16px rgba($primary-color, 0.07);
+
+  // No-tabs variant (login only, no registration) — full rounded card.
+  .mdb-account-login:not(.mdb-account-login--tabs) & {
+    border-top: 1px solid $gray-200;
+    border-radius: 10px;
+  }
+}
+
+.mdb-account-login__heading {
+  font-size: $font-size-xl;
+  color: $primary-dark;
+  font-weight: $font-weight-semibold;
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid $gray-200;
+}
+
+// Shared form rows
+.mdb-form-row {
+  margin-bottom: 1.25rem;
+
+  &--actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.75rem;
+    margin-bottom: 0;
+
+    // Push the submit button to the right when there's a checkbox on the left.
+    .mdb-btn {
+      margin-left: auto;
+    }
+  }
+}
+
+.mdb-form-label {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $primary-color;
+  margin-bottom: 0.4rem;
+
+  .required {
+    color: $error-color;
+    margin-left: 2px;
+  }
+
+  // WooCommerce injects a visually-hidden "Required" span inside labels —
+  // pull it out of the flow so it doesn't create a line-break gap.
+  .screen-reader-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+.mdb-form-input {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: $font-size-base;
+  color: $gray-800;
+  background-color: $white;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+  }
+}
+
+// WooCommerce wraps the password field + show/hide toggle in a <span>.
+// Make it behave like a full-width input wrapper.
+.password-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+  }
+
+  // The actual input inside — remove its own border since the wrapper provides it.
+  .mdb-form-input {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    flex: 1;
+    min-width: 0;
+
+    &:focus {
+      outline: none;
+      border: none;
+      box-shadow: none;
+    }
+  }
+
+  // WooCommerce show/hide password toggle button.
+  .show-password-input {
+    flex-shrink: 0;
+    width: 2.5rem;
+    background: $gray-100;
+    border: none;
+    border-left: 1px solid $gray-300;
+    cursor: pointer;
+    color: $gray-500;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    padding: 0;
+
+    &::before {
+      content: "👁";
+      font-style: normal;
+    }
+
+    &:hover {
+      background-color: $gray-200;
+      color: $primary-color;
+    }
+
+    // WooCommerce adds .display-password when the field is visible.
+    &.display-password {
+      color: $primary-color;
+      background-color: rgba($primary-light, 0.08);
+    }
+  }
+}
+
+.mdb-form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: $font-size-sm;
+  color: $secondary-color;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    accent-color: $teal-accent;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.mdb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.75rem;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &--primary {
+    background-color: $primary-dark;
+    color: $white;
+
+    &:hover {
+      background-color: color.adjust($primary-dark, $lightness: 5%);
+      box-shadow: 0 4px 12px rgba($primary-dark, 0.25);
+      color: $white !important;
+    }
+  }
+}
+
+.mdb-lost-password {
+  margin-top: 1rem;
+  font-size: $font-size-sm;
+
+  a {
+    color: $teal-accent;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.mdb-register-note {
+  font-size: $font-size-sm;
+  color: $secondary-color;
+  background-color: rgba($primary-color, 0.04);
+  border-left: 3px solid $primary-light;
+  padding: 0.75rem 1rem;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 1rem;
+}
+
+// WooCommerce privacy policy notice injected into the register form.
+.woocommerce-privacy-policy-text {
+  font-size: $font-size-xs;
+  color: $gray-500;
+  line-height: $line-height-loose;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background-color: $gray-100;
+  border-radius: 6px;
+
+  a {
+    color: $teal-accent;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+// AJAX auth — inline messages + loading state
+// --------------------------------------------------------------------------
+
+.mdb-auth-message {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.25rem;
+
+  &--error {
+    background-color: rgba($error-color, 0.08);
+    border: 1px solid rgba($error-color, 0.3);
+    color: $error-color;
+  }
+
+  &--success {
+    background-color: rgba($success-color, 0.08);
+    border: 1px solid rgba($success-color, 0.3);
+    color: $success-color;
+  }
+}
+
+// Spinner on the submit button while the request is in-flight.
+.mdb-btn--loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba($white, 0.4);
+    border-top-color: $white;
+    border-radius: 50%;
+    animation: mdb-spin 0.7s linear infinite;
+  }
+}
+
+@keyframes mdb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// --------------------------------------------------------------------------
+// General account content — orders table, addresses, edit forms
+// --------------------------------------------------------------------------
+
+.mdb-account__content {
+  // Default table cell border color — light teal matching the heading bottom border.
+  table td,
+  table th {
+    border-color: rgba($primary-light, 0.4);
+  }
+
+  // WooCommerce notices — handled globally as toasts (see below)
+  .woocommerce-message,
+  .woocommerce-error,
+  .woocommerce-info {
+    // When rendered inside the content area (non-toast fallback) still look clean.
+    display: none; // JS will pick them up and move them to the toast stack
+  }
+
+  // ---- Orders list --------------------------------------------------------
+
+  .mdb-orders {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .mdb-orders-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: $font-size-sm;
+    background-color: $white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba($primary-color, 0.07);
+
+    // Header row
+    .mdb-orders-table__th {
+      background-color: rgba($primary-color, 0.06);
+      color: $primary-dark;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-xs;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.85rem 1.1rem;
+      border-bottom: 2px solid rgba($primary-light, 0.4);
+      text-align: left;
+      white-space: nowrap;
+
+      &.mdb-orders-table__th--order-actions {
+        text-align: right;
+      }
+    }
+
+    // Body rows
+    .mdb-orders-table__row {
+      border-bottom: 1px solid $gray-200;
+      transition: background-color 0.15s ease;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: rgba($primary-color, 0.02);
+      }
+    }
+
+    // Cells (td + th)
+    .mdb-orders-table__cell {
+      padding: 1rem 1.1rem;
+      color: $gray-700;
+      vertical-align: middle;
+
+      &.mdb-orders-table__cell--order-actions {
+        text-align: right;
+      }
+    }
+
+    // Order # link
+    .mdb-orders-table__order-link {
+      text-decoration: none;
+    }
+
+    .mdb-orders-table__order-num {
+      display: inline-block;
+      font-weight: $font-weight-semibold;
+      color: $primary-dark;
+      background-color: rgba($primary-color, 0.07);
+      padding: 0.2rem 0.55rem;
+      border-radius: 5px;
+      font-size: $font-size-xs;
+      letter-spacing: 0.04em;
+      transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+
+      .mdb-orders-table__order-link:hover & {
+        background-color: $teal-accent;
+        color: $white;
+      }
+    }
+
+    // Date
+    .mdb-orders-table__date {
+      color: $secondary-color;
+    }
+
+    // Total + item count stacked
+    .mdb-orders-table__total {
+      display: block;
+      font-weight: $font-weight-semibold;
+      color: $primary-dark;
+    }
+
+    .mdb-orders-table__items {
+      display: block;
+      font-size: $font-size-xs;
+      color: $gray-500;
+      margin-top: 1px;
+    }
+
+    // Action buttons
+    .mdb-orders-action-btn {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-radius: 5px;
+      border: 1px solid $primary-dark;
+      background-color: transparent;
+      color: $primary-dark;
+      text-decoration: none;
+      transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+
+      & + .mdb-orders-action-btn {
+        margin-left: 0.4rem;
+      }
+
+      &:hover {
+        background-color: $primary-dark;
+        color: $white !important;
+      }
+    }
+  }
+
+  // ---- Status badges (shared between orders list + single view) -----------
+
+  .mdb-orders-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+
+    // Completed
+    &--completed {
+      background-color: rgba($success-color, 0.12);
+      color: color.adjust($success-color, $lightness: -15%);
+    }
+
+    // Processing
+    &--processing {
+      background-color: rgba($teal-accent, 0.12);
+      color: color.adjust($teal-accent, $lightness: -15%);
+    }
+
+    // Pending payment
+    &--pending {
+      background-color: rgba($warning-color, 0.15);
+      color: color.adjust($warning-color, $lightness: -30%);
+    }
+
+    // On hold
+    &--on-hold {
+      background-color: rgba($info-color, 0.12);
+      color: color.adjust($info-color, $lightness: -15%);
+    }
+
+    // Cancelled / Failed
+    &--cancelled,
+    &--failed {
+      background-color: rgba($error-color, 0.1);
+      color: color.adjust($error-color, $lightness: -10%);
+    }
+
+    // Refunded
+    &--refunded {
+      background-color: rgba($gray-500, 0.15);
+      color: $gray-600;
+    }
+  }
+
+  // ---- Empty orders state -------------------------------------------------
+
+  .mdb-orders-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    text-align: center;
+    padding: 3rem 2rem;
+    background-color: $white;
+    border: 1px solid $gray-200;
+    border-radius: 10px;
+  }
+
+  // ---- Pagination ---------------------------------------------------------
+
+  .mdb-orders-pagination {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mdb-orders-pagination__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1.1rem;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $primary-dark;
+    border: 1px solid $gray-300;
+    border-radius: 6px;
+    background-color: $white;
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+
+    &:hover {
+      border-color: $primary-dark;
+      background-color: rgba($primary-dark, 0.04);
+      color: $primary-dark;
+    }
+  }
+
+  // ---- Single order view --------------------------------------------------
+
+  .mdb-order-view {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  // The four-cell meta bar at the top of single order
+  .mdb-order-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background-color: $white;
+    border: 1px solid $gray-200;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba($primary-color, 0.07);
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .mdb-order-meta__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1.1rem 1.25rem;
+    border-right: 1px solid $gray-200;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    @media (max-width: 600px) {
+      &:nth-child(2) {
+        border-right: none;
+      }
+      &:nth-child(3),
+      &:nth-child(4) {
+        border-top: 1px solid $gray-200;
+      }
+      &:nth-child(4) {
+        border-right: none;
+      }
+    }
+  }
+
+  .mdb-order-meta__label {
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: $font-weight-semibold;
+    color: $gray-500;
+  }
+
+  .mdb-order-meta__value {
+    font-size: $font-size-sm;
+    color: $gray-700;
+
+    &--number {
+      font-weight: $font-weight-semibold;
+      color: $primary-dark;
+      font-size: $font-size-base;
+    }
+
+    &--total {
+      font-weight: $font-weight-semibold;
+      color: $primary-dark;
+      font-size: $font-size-base;
+    }
+  }
+
+  // Order updates / notes timeline
+  .mdb-order-updates__heading {
+    font-size: $font-size-base;
+    color: $primary-dark;
+    margin-bottom: 1rem;
+  }
+
+  .mdb-order-updates__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .mdb-order-update {
+    border: 1px solid $gray-200;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .mdb-order-update__inner {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.85rem 1.1rem;
+  }
+
+  .mdb-order-update__date {
+    flex-shrink: 0;
+    font-size: $font-size-xs;
+    color: $gray-500;
+    font-weight: $font-weight-medium;
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .mdb-order-update__text {
+    font-size: $font-size-sm;
+    color: $gray-700;
+    line-height: $line-height-normal;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  // WooCommerce order-details section (product table + customer addresses)
+  .woocommerce-order-details {
+    background-color: $white;
+    border: 1px solid $gray-200;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba($primary-color, 0.07);
+    padding: 0;
+
+    .woocommerce-order-details__title {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $primary-dark;
+      margin: 0;
+      padding: 1rem 1.25rem;
+      background-color: rgba($primary-color, 0.04);
+      border-bottom: 2px solid rgba($primary-light, 0.4);
+    }
+
+    .woocommerce-table--order-details {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead th {
+        padding: 0.75rem 1.25rem;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $gray-600;
+        text-align: left;
+        border-bottom: 1px solid $gray-200;
+
+        &.product-total {
+          text-align: right;
+        }
+      }
+
+      tbody tr {
+        border-bottom: 1px solid $gray-200;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: rgba($primary-color, 0.02);
+        }
+      }
+
+      // Product name cell
+      .product-name {
+        padding: 1rem 1.25rem;
+        color: $gray-700;
+        font-size: $font-size-sm;
+
+        a {
+          color: $primary-dark;
+          font-weight: $font-weight-medium;
+          text-decoration: none;
+
+          &:hover {
+            color: $teal-accent;
+          }
+        }
+
+        .product-quantity {
+          color: $gray-500;
+          font-weight: $font-weight-normal;
+        }
+
+        // Variation meta
+        .wc-item-meta {
+          margin-top: 0.3rem;
+          font-size: $font-size-xs;
+          color: $gray-500;
+          list-style: none;
+          padding: 0;
+
+          li {
+            display: flex;
+            gap: 0.3rem;
+          }
+        }
+      }
+
+      // Total cell
+      .product-total {
+        padding: 1rem 1.25rem;
+        text-align: right;
+        font-weight: $font-weight-semibold;
+        color: $primary-dark;
+        font-size: $font-size-sm;
+        white-space: nowrap;
+      }
+
+      // tfoot — subtotals / grand total
+      tfoot {
+        tr {
+          border-top: 1px solid $gray-200;
+
+          th {
+            padding: 0.65rem 1.25rem;
+            font-size: $font-size-xs;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: $font-weight-semibold;
+            color: $gray-600;
+            text-align: left;
+          }
+
+          td {
+            padding: 0.65rem 1.25rem;
+            text-align: right;
+            font-size: $font-size-sm;
+            color: $gray-700;
+          }
+
+          // Grand total row — highlight it
+          &:last-of-type:not(.order-actions--heading ~ tr) {
+            background-color: rgba($primary-color, 0.03);
+            border-top: 2px solid rgba($primary-light, 0.4);
+
+            th,
+            td {
+              font-size: $font-size-base;
+              font-weight: $font-weight-semibold;
+              color: $primary-dark;
+            }
+          }
+
+          // Actions row inside tfoot
+          &.order-actions--heading ~ tr,
+          th.order-actions--heading ~ th {
+            th,
+            td {
+              padding: 0.85rem 1.25rem;
+            }
+          }
+        }
+
+        // Order action buttons inside tfoot
+        .order-actions-button {
+          display: inline-block;
+          padding: 0.35rem 0.9rem;
+          font-size: $font-size-xs;
+          font-weight: $font-weight-semibold;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          border-radius: 5px;
+          border: 1px solid $primary-dark;
+          background-color: transparent;
+          color: $primary-dark;
+          text-decoration: none;
+          transition:
+            background-color 0.2s ease,
+            color 0.2s ease;
+
+          & + .order-actions-button {
+            margin-left: 0.4rem;
+          }
+
+          &:hover {
+            background-color: $primary-dark;
+            color: $white !important;
+          }
+        }
+      }
+    }
+  }
+
+  // Customer billing/shipping addresses on single order
+  .woocommerce-customer-details {
+    background-color: $white;
+    border: 1px solid $gray-200;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba($primary-color, 0.07);
+
+    // Two-column when shipping is shown
+    .woocommerce-columns--addresses {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .woocommerce-column {
+      padding: 1.25rem;
+
+      &--billing-address {
+        border-right: 1px solid $gray-200;
+      }
+
+      @media (max-width: 600px) {
+        &--billing-address {
+          border-right: none;
+          border-bottom: 1px solid $gray-200;
+        }
+      }
+    }
+
+    // When there's only billing (no columns wrapper)
+    > address,
+    > .woocommerce-column__title {
+      padding: 1.25rem;
+    }
+
+    .woocommerce-column__title {
+      margin: 0;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $gray-500;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid $gray-200;
+    }
+
+    address {
+      font-style: normal;
+      font-size: $font-size-sm;
+      color: $secondary-color;
+      line-height: $line-height-loose;
+      border-radius: 0;
+      border: none;
+    }
+
+    .woocommerce-customer-details--phone,
+    .woocommerce-customer-details--email {
+      margin: 0.15rem 0 0;
+      font-size: $font-size-xs;
+      color: $gray-500;
+    }
+  }
+
+  // Addresses section
+  .mdb-address-intro {
+    color: $secondary-color;
+    font-size: $font-size-sm;
+    margin-bottom: 1.5rem;
+  }
+
+  .mdb-address-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .mdb-address-card {
+    background-color: $white;
+    border: 1px solid $gray-200;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba($primary-color, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .mdb-address-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid $gray-200;
+  }
+
+  .mdb-address-card__title {
+    margin: 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $primary-dark;
+  }
+
+  .mdb-address-card__edit {
+    font-size: $font-size-xs;
+    color: $teal-accent;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid $teal-accent;
+    border-radius: 4px;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background-color: $teal-accent;
+      color: $white;
+    }
+  }
+
+  .mdb-address-card__address {
+    color: $secondary-color;
+    font-style: normal;
+    line-height: $line-height-loose;
+    font-size: $font-size-sm;
+    flex: 1;
+  }
+
+  .mdb-address-card__empty {
+    color: $gray-500;
+    font-style: italic;
+  }
+
+  // Edit account / address forms
+  .woocommerce-EditAccountForm,
+  .woocommerce-address-fields {
+    .woocommerce-form-row {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $primary-color;
+      margin-bottom: 0.4rem;
+
+      .required {
+        color: $error-color;
+        margin-left: 2px;
+      }
+    }
+
+    input.input-text,
+    select,
+    textarea {
+      display: block;
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid $gray-300;
+      border-radius: 6px;
+      font-size: $font-size-base;
+      color: $gray-800;
+      background-color: $white;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+      }
+    }
+
+    fieldset {
+      border: 1px solid $gray-200;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+
+      legend {
+        padding: 0 0.5rem;
+        font-weight: $font-weight-semibold;
+        color: $primary-dark;
+        font-size: $font-size-sm;
+      }
+    }
+
+    .button[type="submit"],
+    button[name="save_account_details"],
+    button[name="save_address"] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem 1.75rem;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background-color: $primary-dark;
+      color: $white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+      &:hover {
+        background-color: color.adjust($primary-dark, $lightness: 5%);
+        box-shadow: 0 4px 12px rgba($primary-dark, 0.25);
+        color: $white !important;
+      }
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+// AJAX loading state
+// --------------------------------------------------------------------------
+
+.mdb-account__content {
+  transition: opacity 0.2s ease;
+  width: 100%;
+
+  &.mdb-account-loading {
+    opacity: 0.4;
+    pointer-events: none;
+    position: relative;
+
+    &::after {
+      content: "";
+      display: block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid $gray-300;
+      border-top-color: $teal-accent;
+      border-radius: 50%;
+      position: absolute;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: mdb-spin 0.6s linear infinite;
+    }
+  }
+}
+
+@keyframes mdb-spin {
+  to {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+// ==========================================================================
+// Toast notification system
+// WooCommerce notices are moved into a fixed bottom-right stack by JS.
+// ==========================================================================
+
+// --- Container fixed to the viewport --------------------------------------
+
+#mdb-toast-stack {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 340px;
+  max-width: calc(100vw - 3rem);
+  pointer-events: none; // let clicks pass through the empty stack
+}
+
+// --- Individual toast -----------------------------------------------------
+
+.mdb-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  box-shadow:
+    0 4px 16px rgba($primary-color, 0.14),
+    0 1px 4px rgba($primary-color, 0.08);
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  pointer-events: all;
+
+  // Enter animation
+  animation: mdb-toast-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  // Exit class added by JS
+  &.mdb-toast--leaving {
+    animation: mdb-toast-out 0.22s ease-in both;
+  }
+
+  // --- Variants ---
+
+  &--success {
+    background-color: color.adjust($success-color, $lightness: 48%);
+    border-left: 4px solid $success-color;
+    color: color.adjust($success-color, $lightness: -20%);
+
+    .mdb-toast__icon {
+      color: $success-color;
+    }
+  }
+
+  &--error {
+    background-color: color.adjust($error-color, $lightness: 48%);
+    border-left: 4px solid $error-color;
+    color: color.adjust($error-color, $lightness: -18%);
+
+    .mdb-toast__icon {
+      color: $error-color;
+    }
+  }
+
+  &--info {
+    background-color: color.adjust($teal-accent, $lightness: 42%);
+    border-left: 4px solid $teal-accent;
+    color: color.adjust($teal-accent, $lightness: -20%);
+
+    .mdb-toast__icon {
+      color: $teal-accent;
+    }
+  }
+}
+
+// --- Parts ----------------------------------------------------------------
+
+.mdb-toast__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+.mdb-toast__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  a {
+    font-weight: $font-weight-semibold;
+    text-decoration: underline;
+    color: inherit;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  // WooCommerce injects <a class="button"> links inside notice text (e.g. "Browse products"
+  // on the empty downloads page). WC's own stylesheet floats these right — reset that so they
+  // sit naturally left-aligned below the message text as a small inline action.
+  a.button,
+  a.wc-forward {
+    display: inline-block;
+    float: none;
+    margin-top: 0.4rem;
+    text-decoration: none;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid currentColor;
+    opacity: 0.8;
+    width: fit-content;
+
+    &:hover {
+      opacity: 1;
+      text-decoration: none;
+    }
+  }
+
+  // Error list items inside the body
+  li {
+    list-style: disc;
+    margin-left: 1.1rem;
+    margin-top: 0.2rem;
+  }
+}
+
+.mdb-toast__close {
+  flex-shrink: 0;
+  min-width: 20px;
+  min-height: 20px;
+  background: none !important;
+  border: none;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.5;
+  // Force a visible color — upstream button resets (WC/parent theme) can set
+  // button color to #fff which makes currentColor-based SVGs invisible.
+  color: $primary-color !important;
+  transition: opacity 0.15s ease;
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    // stroke is hardcoded on the SVG element itself so CSS cannot override it
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// --- Progress bar (auto-dismiss countdown) --------------------------------
+
+.mdb-toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 0 0 10px 10px;
+  background-color: currentColor;
+  opacity: 0.25;
+  transform-origin: left;
+  animation: mdb-toast-progress linear both;
+}
+
+// Toasts need relative positioning for the progress bar
+.mdb-toast {
+  position: relative;
+  overflow: hidden;
+}
+
+// --- Keyframes ------------------------------------------------------------
+
+@keyframes mdb-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mdb-toast-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 120px;
+    margin-bottom: 0;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(110%);
+    max-height: 0;
+    margin-bottom: -0.6rem;
+  }
+}
+
+@keyframes mdb-toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+// --- Mobile — full width, bottom ----------------------------------------
+
+@media (max-width: 480px) {
+  #mdb-toast-stack {
+    width: calc(100vw - 2rem);
+    right: 1rem;
+    top: 1rem;
+  }
+}
+
+// --------------------------------------------------------------------------
+// Responsive — collapse sidebar above content on mobile
+// --------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .mdb-account {
+    flex-direction: column;
+    padding: 0 1rem;
+    gap: 1.25rem;
+  }
+
+  .mdb-account__sidebar {
+    flex: none;
+    width: 100%;
+  }
+
+  // Horizontal scrolling nav on small screens
+  .mdb-account-nav__list {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    li {
+      border-bottom: none;
+      border-right: 1px solid $gray-200;
+      flex-shrink: 0;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+
+  .mdb-account-nav__link {
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.75rem 1rem;
+    font-size: $font-size-xs;
+    text-align: center;
+
+    &--active {
+      border-left: none;
+      border-bottom: 3px solid $teal-accent;
+      padding-bottom: calc(0.75rem - 3px);
+    }
+
+    &:hover {
+      padding-left: 1rem; // no indent on mobile
+    }
+  }
+
+  .mdb-account-dashboard__quick-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .mdb-account-login__card {
+    padding: 1.5rem 1rem;
+  }
+
+  .mdb-account-dashboard__quick-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .woocommerce-orders-table,
+  .mdb-orders-table {
+    // Stack table rows on very small screens
+    thead {
+      display: none;
+    }
+
+    .mdb-orders-table__row {
+      display: block;
+      margin-bottom: 0;
+      border: 1px solid $gray-200;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .mdb-orders-table__cell {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.9rem;
+      border-bottom: 1px solid $gray-100;
+      text-align: right;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.mdb-orders-table__cell--order-actions {
+        text-align: right;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      &::before {
+        content: attr(data-title);
+        font-weight: $font-weight-semibold;
+        color: $primary-color;
+        font-size: $font-size-xs;
+        text-transform: uppercase;
+        text-align: left;
+        flex: 0 0 45%;
+      }
+    }
+  }
+}

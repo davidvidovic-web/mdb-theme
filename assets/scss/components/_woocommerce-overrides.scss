@@ -1,0 +1,700 @@
+@use 'sass:color';
+@use '../variables' as *;
+
+// Palette constraints for cart/checkout overrides
+// These are now global variables: $black, $white, $teal-accent, $topbar-bg
+
+// Remove WooCommerce empty-cart crying icon (base64 mask)
+.wc-block-cart__empty-cart__title.with-empty-cart-icon::before {
+    display: none !important;
+    content: none !important;
+}
+
+// Tone the empty cart heading to the approved palette
+.wc-block-cart__empty-cart__title {
+    color: $topbar-bg;
+}
+
+// Buttons/links in empty cart block to stay within palette
+.wc-block-cart__empty-cart .wc-block-components-button,
+.wc-block-cart__empty-cart .wc-block-cart__empty-cart__return-to-shop {
+    background-color: $teal-accent;
+    color: $white;
+    border-color: $teal-accent;
+}
+
+.wc-block-cart__empty-cart .wc-block-components-button:hover,
+.wc-block-cart__empty-cart .wc-block-cart__empty-cart__return-to-shop:hover {
+    background-color: color.adjust($teal-accent, $lightness: -5%);
+    border-color: color.adjust($teal-accent, $lightness: -5%);
+    color: $white;
+}
+
+// ==========================================================================
+// Full Cart & Checkout Colors Override (Replacing Elementor Default Colors)
+// ==========================================================================
+
+body.woocommerce-cart,
+body.woocommerce-checkout,
+.elementor-widget-woocommerce-cart,
+.elementor-widget-woocommerce-checkout,
+.woocommerce {
+    
+    // ----------------------------------------
+    // General Cart & Checkout Products Table
+    // ----------------------------------------
+    table.shop_table {
+        border-color: $gray-200;
+        
+        thead th {
+            color: $primary-dark;
+            background-color: rgba($primary-color, 0.05);
+            text-transform: uppercase;
+            font-weight: 700;
+            border-bottom: 2px solid $primary-light;
+        }
+
+        td, th {
+            border-top: 1px solid $gray-200;
+        }
+        
+        // Product Name
+        td.product-name {
+            a {
+                color: $primary-dark;
+                font-weight: 600;
+                transition: color 0.3s ease;
+                
+                &:hover {
+                    color: $primary-color;
+                }
+            }
+        }
+        
+        // Product Price
+        td.product-price,
+        td.product-subtotal {
+            color: $primary-color;
+            font-weight: 700;
+            
+            .amount {
+                color: $primary-color;
+            }
+        }
+        
+        // Remove icon
+        a.remove {
+            color: $error-color !important;
+            border: 1px solid $error-color !important;
+            
+            &:hover {
+                background-color: $error-color !important;
+                color: $white !important;
+            }
+        }
+    }
+    
+    // Cart Totals Area
+    .cart_totals {
+        h2 {
+            color: $primary-dark;
+            border-bottom: 2px solid $gray-200;
+            padding-bottom: 0.5rem;
+        }
+        
+        table.shop_table {
+            border: 1px solid $gray-200;
+            border-radius: 8px;
+            
+            th {
+                color: $secondary-color;
+                background-color: $gray-100;
+            }
+            
+            .order-total {
+                th, td {
+                    border-top: 2px solid $primary-light;
+                    background-color: rgba($primary-color, 0.03);
+                }
+                
+                .amount {
+                    color: $primary-color;
+                    font-size: 1.25rem;
+                }
+            }
+        }
+    }
+
+    // ----------------------------------------
+    // Coupons Section
+    // ----------------------------------------
+    .coupon {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1.5rem;
+        background-color: rgba($primary-color, 0.05);
+        border: 1px dashed $primary-light;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        
+        label {
+            display: none; // Often visually hidden anyway
+        }
+        
+        .input-text {
+            border: 1px solid $gray-300;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            flex: 1;
+            min-width: 200px;
+            color: $gray-800;
+            
+            &:focus {
+                border-color: $primary-color;
+                outline: none;
+                box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+            }
+        }
+        
+        button.button {
+            background-color: $primary-dark !important;
+            color: $white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            
+            &:hover {
+                background-color: $primary-color !important;
+                box-shadow: 0 4px 10px rgba($primary-dark, 0.2) !important;
+            }
+        }
+    }
+
+    // Checkout specific coupon form
+    form.checkout_coupon {
+        border: 1px dashed $primary-light;
+        padding: 1.5rem;
+        background-color: rgba($primary-color, 0.02);
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        
+        p {
+            color: $secondary-color;
+        }
+        
+        .input-text {
+            border: 1px solid $gray-300;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            
+            &:focus {
+                border-color: $primary-color;
+                outline: none;
+                box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+            }
+        }
+        
+        button.button {
+            background-color: $primary-dark !important;
+            color: $white !important;
+            border-radius: 6px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            
+            &:hover {
+                background-color: $primary-color !important;
+            }
+        }
+    }
+
+    // Info/Notice Messages (often used for "Have a coupon?")
+    .woocommerce-info {
+        border-top-color: $primary-light;
+        background-color: rgba($primary-color, 0.05);
+        color: $primary-dark;
+        
+        &::before {
+            color: $primary-light;
+        }
+        
+        a {
+            color: $primary-color;
+            font-weight: 600;
+            
+            &:hover {
+                color: $primary-dark;
+            }
+        }
+    }
+    
+    .woocommerce-message {
+        border-top-color: $success-color;
+        background-color: rgba($success-color, 0.05);
+        color: scale-color($success-color, $lightness: -20%);
+        
+        &::before {
+            color: $success-color;
+        }
+    }
+    
+    .woocommerce-error {
+        border-top-color: $error-color;
+        background-color: rgba($error-color, 0.05);
+        color: scale-color($error-color, $lightness: -20%);
+        
+        &::before {
+            color: $error-color;
+        }
+    }
+
+    // ----------------------------------------
+    // Checkout Forms & Inputs
+    // ----------------------------------------
+    form.checkout {
+        h3 {
+            color: $primary-dark;
+            border-bottom: 2px solid $gray-200;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .woocommerce-billing-fields__field-wrapper,
+        .woocommerce-shipping-fields__field-wrapper,
+        .woocommerce-additional-fields__field-wrapper {
+            .form-row {
+                label {
+                    color: $gray-700;
+                    font-weight: 600;
+                }
+                
+                input.input-text,
+                textarea,
+                select {
+                    border: 1px solid $gray-300;
+                    border-radius: 6px;
+                    padding: 0.75rem;
+                    background-color: $white;
+                    color: $gray-800;
+                    
+                    &:focus {
+                        border-color: $primary-color;
+                        outline: none;
+                        box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+                    }
+                }
+            }
+        }
+        
+        // Checkout Order Review Product Details
+        #order_review {
+            table.shop_table {
+                border-radius: 8px;
+                border: 1px solid $primary-light;
+                overflow: hidden;
+                
+                th {
+                    background-color: rgba($primary-color, 0.05);
+                    color: $primary-dark;
+                }
+                
+                td {
+                    border-top: 1px solid $gray-200;
+                }
+                
+                .product-name {
+                    color: $primary-dark;
+                    font-weight: 500;
+                    
+                    .product-quantity {
+                        color: $secondary-color;
+                        font-weight: 700;
+                    }
+                }
+                
+                .product-total .amount {
+                    color: $primary-color;
+                    font-weight: 700;
+                }
+                
+                tfoot {
+                    th, td {
+                        background-color: $gray-100;
+                    }
+                    
+                    .order-total, .cart-subtotal {
+                        th, td {
+                            border-top: 2px solid $primary-light;
+                            background-color: rgba($primary-color, 0.05);
+                        }
+                        
+                        .amount {
+                            color: $primary-color;
+                            font-size: 1.25rem;
+                            font-weight: 800;
+                        }
+                    }
+                }
+            }
+            
+            // Payment Methods
+            #payment {
+                background-color: $gray-100;
+                border-radius: 8px;
+                padding: 1.5rem;
+                border: 1px solid $gray-200;
+                
+                ul.payment_methods {
+                    border-bottom-color: $gray-300;
+                    
+                    li {
+                        color: $gray-800;
+                        
+                        label {
+                            font-weight: 600;
+                            color: $primary-dark;
+                        }
+                    }
+                    
+                    div.payment_box {
+                        background-color: $white;
+                        color: $gray-700;
+                        border: 1px solid $gray-300;
+                        
+                        &::before {
+                            border-bottom-color: $gray-300; // The little triangle
+                        }
+                        &::after {
+                            border-bottom-color: $white; 
+                            margin-top: 1px;
+                        }
+                    }
+                }
+                
+                .place-order {
+                    button.button {
+                        background-color: $accent-color !important;
+                        color: $white !important;
+                        font-size: 1.25rem !important;
+                        padding: 1rem 2rem !important;
+                        border-radius: 8px !important;
+                        font-weight: 700 !important;
+                        text-transform: uppercase;
+                        box-shadow: 0 4px 15px rgba($accent-color, 0.3) !important;
+                        transition: all 0.3s ease !important;
+                        width: 100%;
+                        border: none !important;
+                        
+                        &:hover {
+                            background-color: $primary-color !important;
+                            transform: translateY(-2px) !important;
+                            box-shadow: 0 6px 20px rgba($primary-color, 0.4) !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ==========================================================================
+// Elementor Mini Cart Overrides
+// ==========================================================================
+.elementor-menu-cart__wrapper {
+    
+    // Fix overall padding and borders - Using grid layout for inline image
+    .elementor-menu-cart__product {
+        padding: 1.5rem 1rem !important;
+        border-bottom: 1px solid $gray-200 !important;
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        gap: 0.5rem 1rem;
+        align-items: start;
+        position: relative;
+    }
+
+    // Image sizing - inline left
+    .elementor-menu-cart__product-image {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        width: 100% !important;
+        margin: 0;
+        
+        img {
+            border-radius: 8px;
+            border: 1px solid $gray-200;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba($black, 0.05);
+        }
+    }
+
+    // Product Title Name - Treat children as separate elements
+    .elementor-menu-cart__product-name {
+        display: contents; // Breaks wrapper so title/options act independently in grid
+        
+        & > a {
+            grid-column: 2;
+            grid-row: 1;
+            color: $primary-dark !important;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-align: left;
+            text-decoration: none;
+            display: block;
+            line-height: 1.3;
+            margin-top: 0;
+            padding-right: 1.5rem; // Room for close btn
+            
+            &:hover {
+                color: $primary-color !important;
+            }
+        }
+    }
+
+    // Price Area - Inline right, below title
+    .elementor-menu-cart__product-price {
+        grid-column: 2;
+        grid-row: 2;
+        color: $primary-color !important;
+        font-weight: 700;
+        font-size: 1rem;
+        text-align: left;
+        background: rgba($primary-color, 0.05);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        display: inline-flex;
+        align-self: start;
+        justify-self: start;
+
+        .quantity {
+            color: $gray-700;
+            
+            .amount {
+                color: $primary-color;
+            }
+        }
+    }
+    
+    // JS injected Toggle Button 
+    .mdb-options-toggle-btn {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        background: none;
+        border: 1px solid $gray-300;
+        color: $gray-700;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: $gray-100;
+            border-color: $gray-400;
+        }
+        
+        &.active {
+            border-color: $primary-light;
+            color: $primary-dark;
+            
+            .arrow {
+                transform: rotate(180deg);
+            }
+        }
+        
+        .arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.7em;
+        }
+    }
+    
+    // JS Injected Wrapper for sliding
+    .mdb-options-wrapper {
+        grid-column: 1 / -1;
+        grid-row: 4;
+        width: 100%;
+        background: $gray-100;
+        border-radius: 6px;
+        padding: 1rem;
+        border: 1px solid $gray-200;
+        margin-top: 0.25rem;
+    }
+
+    // Variations List (dl.variation)
+    dl.variation {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0;
+        font-size: 0.8rem;
+        
+        // Use a better grid approach
+        @supports (display: grid) {
+            display: grid !important;
+            grid-template-columns: 55% 45%;
+            column-gap: 0.5rem;
+            row-gap: 0.5rem;
+            align-items: start;
+        }
+        
+        dt {
+            font-weight: 600;
+            color: $gray-800 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            white-space: normal;
+            word-break: break-word;
+        }
+        
+        dd {
+            margin: 0 !important;
+            padding: 0 !important;
+            color: $gray-600 !important;
+            white-space: normal;
+            word-break: break-word;
+            
+            p {
+                margin: 0 !important;
+                line-height: inherit;
+            }
+        }
+    }
+
+    // Product Remove X
+    .elementor-menu-cart__product-remove {
+        position: absolute;
+        top: 1rem;
+        right: 0.5rem;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        
+        // Hide duplicate generic uni cpo actions
+        .uni-cpo-cart-action,
+        .uni-cpo-action-edit {
+            display: none !important;
+        }
+
+        // Hide WC standard if Elementor's is present
+        .remove_from_cart_button:not(.elementor_remove_from_cart_button) {
+            display: none !important;
+        }
+        
+        // Style the A tag
+        a.elementor_remove_from_cart_button, a.remove_from_cart_button {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 26px !important;
+            height: 26px !important;
+            color: $gray-500 !important;
+            border: 2px solid $gray-300 !important;
+            border-radius: 50%;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            background: $white;
+            line-height: 1;
+            
+            &:hover {
+                background-color: $error-color !important;
+                border-color: $error-color !important;
+                color: $white !important;
+                transform: scale(1.1);
+            }
+
+            // Provide our own purely visual X if empty
+            &:empty::before {
+                content: "×";
+                font-size: 18px;
+                font-weight: bold;
+                line-height: 1;
+                margin-top: -2px; /* optical vertical centering */
+            }
+        }
+    }
+
+    // Subtotal Section
+    .elementor-menu-cart__subtotal {
+        color: $primary-dark !important;
+        font-size: 1.2rem;
+        padding: 1rem 0 !important;
+        border-top: 2px solid $gray-200 !important;
+        border-bottom: 2px solid $gray-200 !important;
+        margin: 1.5rem 0 !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        strong {
+            color: $gray-800;
+            font-weight: 700;
+        }
+        
+        .amount {
+            color: $primary-color !important;
+            font-weight: 800;
+        }
+    }
+
+    // Buttons
+    .elementor-menu-cart__footer-buttons {
+        display: flex;
+        gap: 1rem;
+        align-items: stretch;
+        
+        .elementor-button {
+            flex: 1;
+            justify-content: center;
+            padding: 0.85rem 1rem !important;
+            border-radius: 6px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            font-size: 0.9rem !important;
+            transition: all 0.3s ease;
+            height: auto;
+            display: flex;
+            align-items: center;
+            
+            &--view-cart {
+                background-color: $white !important;
+                color: $primary-dark !important;
+                border: 2px solid $primary-dark !important;
+                
+                &:hover {
+                    background-color: rgba($primary-color, 0.05) !important;
+                    color: $primary-color !important;
+                    border-color: $primary-color !important;
+                }
+            }
+            
+            &--checkout {
+                background-color: $accent-color !important;
+                color: $white !important;
+                border: 2px solid $accent-color !important;
+                box-shadow: 0 4px 10px rgba($accent-color, 0.2);
+                
+                &:hover {
+                    background-color: $primary-color !important;
+                    border-color: $primary-color !important;
+                }
+            }
+        }
+    }
+}

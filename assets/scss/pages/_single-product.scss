@@ -1,0 +1,619 @@
+// Single Product Page Styles
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.single-product {
+  // Hide the default WC product gallery (Left side)
+  // as per the mockup, the product page is all options.
+  #primary {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  div.product {
+    display: flex;
+    flex-direction: column;
+
+    .woocommerce-product-gallery {
+      display: none !important;
+    }
+
+    .summary.entry-summary {
+      width: 100% !important;
+      float: none !important;
+      clear: both;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  // Back to selection breadcrumb
+  .mdb-product-breadcrumb {
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid $gray-200;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      color: $gray-700;
+      font-weight: 500;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+
+      .icon {
+        border: 1px solid $gray-300;
+        border-radius: 4px;
+        padding: 0.2rem 0.5rem;
+        margin-right: 0.75rem;
+        font-weight: 400;
+        background: $white;
+      }
+
+      &:hover {
+        color: $primary-color;
+        .icon {
+          border-color: $primary-color;
+          color: $primary-color;
+        }
+      }
+    }
+  }
+
+  // The custom layout applied to the form via JS
+  .mdb-product-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    align-items: flex-start;
+
+    @media (min-width: $breakpoint-md) {
+      flex-direction: row;
+    }
+  }
+
+  // Main Options Area (Left)
+  .mdb-product-main {
+    flex: 1;
+    width: 100%;
+
+    // Style the option blocks (Steps)
+    // .uni-builderius-container is the single outer wrapper;
+    // .uni_row elements inside it are the individual step rows.
+    .uni-builderius-container {
+      [id^="uni_row_"] {
+        background: $white;
+        border: 1px solid $gray-200;
+        border-radius: 8px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 15px rgba($black, 0.02);
+        position: relative;
+
+        &:nth-child(odd) {
+          background: rgba($primary-light, 0.08);
+          border-color: rgba($primary-light, 0.25);
+        }
+
+        .uni-row-content-wrap {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+
+    // Radio buttons / Options Grid
+    .uni-module-radio ul.uni-cpo-radio-options,
+    .uni-module-radio div.uni-cpo-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem 0;
+      margin: 0;
+      list-style: none;
+
+      li,
+      .uni-cpo-option {
+        margin: 0;
+        padding: 0;
+        position: relative;
+
+        .uni-cpo-option-label {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 1.5rem;
+          border: 1px solid $gray-300;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          height: 100%;
+          background: $white;
+
+          &:hover {
+            border-color: $primary-light;
+            box-shadow: 0 4px 12px rgba($primary-color, 0.05);
+          }
+
+          input[type="radio"]:checked + & {
+            border-color: $primary-color;
+            background: rgba($primary-color, 0.02);
+            box-shadow: 0 0 0 1px $primary-color;
+
+            &::after {
+              content: "✓";
+              position: absolute;
+              top: -10px;
+              right: -10px;
+              width: 24px;
+              height: 24px;
+              background: $primary-color;
+              color: $white;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 12px;
+              font-weight: bold;
+            }
+          }
+
+          img,
+          .uni-cpo-option-label__radio {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+            border-radius: 50%;
+            background: $gray-100;
+          }
+
+          .uni-cpo-option-label__text {
+            color: $gray-800;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+          }
+
+          .uni-cpo-option-subtext {
+            color: $gray-500;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Sidebar (Right)
+  .mdb-product-sidebar {
+    width: 100%;
+    background: $white;
+    border: 1px solid $primary-light;
+    border-radius: 8px;
+    padding: 2.5rem;
+    position: sticky;
+    top: 100px;
+    box-shadow: 0 4px 20px rgba($primary-dark, 0.05);
+
+    @media (min-width: $breakpoint-md) {
+      width: 380px;
+      flex-shrink: 0;
+    }
+
+    .mdb-summary-heading {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: $primary-dark;
+      margin: 0 0 2rem 0;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid $gray-100;
+    }
+
+    h1.product_title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $gray-900;
+      margin: 0 0 1.5rem 0;
+    }
+
+    // NBO Summary details
+    .uni-cpo-summary {
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      color: $gray-700;
+
+      div {
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+
+        strong {
+          color: $gray-900;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .mdb-summary-price {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-top: 1px solid $gray-200;
+      border-bottom: 1px solid $gray-200;
+      margin-bottom: 2rem;
+
+      span {
+        font-size: 1.15rem;
+        color: $gray-600;
+      }
+
+      .uni-module-dynamic_notice,
+      .price {
+        margin: 0;
+        padding: 0;
+        font-size: 1.75rem;
+        color: $primary-color;
+        font-weight: 800;
+      }
+    }
+
+    .mdb-summary-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      .uni-cpo-calculate-btn {
+        background: $white;
+        color: $primary-dark;
+        border: 2px solid $primary-dark;
+        padding: 1rem;
+        border-radius: 6px;
+        font-weight: 700;
+        text-transform: uppercase;
+        width: 100%;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: $primary-dark;
+          color: $white;
+        }
+      }
+
+      // Usually hide quantity for blinds standard flow if it's strictly 1
+      .quantity {
+        display: none !important;
+      }
+
+      .single_add_to_cart_button {
+        background: $primary-color !important;
+        color: $white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 1.25rem !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        width: 100%;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 15px rgba($primary-color, 0.3);
+
+        &:disabled {
+          background: $gray-300 !important;
+          box-shadow: none;
+          color: $gray-500 !important;
+        }
+
+        &:not(:disabled):hover {
+          background: $primary-dark !important;
+          transform: translateY(-2px);
+        }
+      }
+    }
+
+    .mdb-secure-payments {
+      margin-top: 2rem;
+      text-align: center;
+      color: $gray-500;
+      font-size: 0.85rem;
+
+      img {
+        display: block;
+        max-width: 200px;
+        margin: 0.5rem auto 0;
+      }
+    }
+  }
+}
+
+// ==========================================================================
+// Product Meta (SKU, categories, tags)
+// ==========================================================================
+
+.single-product .product_meta {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $gray-200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: $font-size-sm;
+
+  > span {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    color: $gray-600;
+    line-height: $line-height-normal;
+
+    // Label (e.g. "SKU:", "Category:")
+    .sku_wrapper,
+    &.sku_wrapper {
+      font-weight: $font-weight-semibold;
+      color: $gray-700;
+    }
+
+    .posted_in,
+    &.posted_in {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .tagged_as,
+    &.tagged_as {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    // The label text nodes are bare — target the strong WC uses
+    strong,
+    label {
+      font-weight: $font-weight-semibold;
+      color: $gray-700;
+      white-space: nowrap;
+    }
+
+    // Links (category names, tag names)
+    a {
+      color: $primary-dark;
+      text-decoration: none;
+      font-weight: $font-weight-medium;
+      transition: color 0.18s ease;
+
+      &:hover {
+        color: $primary-light;
+      }
+
+      & + a::before {
+        content: ", ";
+        color: $gray-500;
+        font-weight: $font-weight-normal;
+      }
+    }
+  }
+
+  .sku {
+    font-family: $font-monospace;
+    font-size: $font-size-xs;
+    color: $gray-500;
+    background: $gray-100;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+}
+
+// ==========================================================================
+// WooCommerce Tabs
+// ==========================================================================
+
+.single-product .woocommerce-tabs.wc-tabs-wrapper {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid $gray-200;
+
+  // Tab nav
+  ul.tabs.wc-tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+
+    li {
+      margin: 0;
+      padding: 0;
+      position: relative;
+
+      a {
+        display: block;
+        padding: 0.7rem 1.4rem;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $gray-600;
+        text-decoration: none;
+        border: none;
+        background: transparent;
+        transition: color 0.18s ease;
+        white-space: nowrap;
+
+        &:hover {
+          color: $primary-dark;
+        }
+      }
+
+      // Teal underline indicator on active tab
+      &.active a {
+        color: $primary-dark;
+      }
+
+      &.active::after {
+        content: "";
+        position: absolute;
+        bottom: -2px; // sits on top of the ul border-bottom
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $primary-light;
+      }
+    }
+  }
+
+  // Tab panels
+  .woocommerce-Tabs-panel {
+    padding: 1.75rem 0;
+    font-size: $font-size-base;
+    color: $gray-700;
+    line-height: $line-height-loose;
+
+    // WC auto-injects an h2 repeating the tab name — hide it
+    > h2:first-child {
+      display: none;
+    }
+
+    h3 {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $primary-color;
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    p {
+      margin: 0 0 0.85rem;
+    }
+
+    a {
+      color: $primary-dark;
+      text-decoration: underline;
+      &:hover {
+        color: $primary-light;
+      }
+    }
+
+    // Reviews panel
+    #reviews {
+      #comments {
+        margin-bottom: 2rem;
+      }
+
+      .comment_container {
+        display: flex;
+        gap: 1rem;
+        padding: 1.25rem 0;
+        border-bottom: 1px solid $gray-200;
+
+        img.avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          border: 2px solid $gray-200;
+        }
+
+        .comment-text {
+          flex: 1;
+          min-width: 0;
+
+          .star-rating {
+            color: $warning-color;
+            font-size: 0.85rem;
+          }
+
+          p.meta {
+            font-size: $font-size-xs;
+            color: $gray-500;
+            margin: 0.2rem 0 0.75rem;
+
+            strong {
+              color: $gray-800;
+              font-weight: $font-weight-semibold;
+            }
+          }
+
+          .description p {
+            font-size: $font-size-sm;
+          }
+        }
+      }
+
+      #review_form_wrapper {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid $gray-200;
+
+        #reply-title {
+          font-size: $font-size-base;
+          font-weight: $font-weight-semibold;
+          color: $primary-dark;
+          margin-bottom: 1rem;
+        }
+
+        .comment-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+
+          .comment-form-rating {
+            order: -1;
+          }
+
+          .stars a {
+            color: $gray-400;
+            font-size: 1.3rem;
+            text-decoration: none;
+            &:hover,
+            &.active {
+              color: $warning-color;
+            }
+          }
+
+          input[type="text"],
+          input[type="email"],
+          textarea {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid $gray-300;
+            border-radius: 6px;
+            font-size: $font-size-sm;
+            color: $gray-800;
+            background: $white;
+            transition:
+              border-color 0.18s ease,
+              box-shadow 0.18s ease;
+
+            &:focus {
+              outline: none;
+              border-color: $primary-light;
+              box-shadow: 0 0 0 3px rgba($primary-light, 0.15);
+            }
+          }
+
+          textarea {
+            resize: vertical;
+            min-height: 100px;
+          }
+
+          input[type="submit"] {
+            align-self: flex-start;
+            background: $primary-color;
+            color: $white;
+            border: none;
+            padding: 0.65rem 1.5rem;
+            border-radius: 6px;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-semibold;
+            cursor: pointer;
+            transition: background 0.18s ease;
+
+            &:hover {
+              background: $primary-dark;
+            }
+          }
+        }
+      }
+    }
+  }
+}

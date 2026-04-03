@@ -1,0 +1,115 @@
+/*
+ * Admin Styles SCSS for MDB Theme
+ * 
+ * This file contains custom SCSS for the WordPress admin area.
+ * Use this to customize the admin interface appearance.
+ */
+
+// Import variables for use in this file
+@use 'variables' as *;
+
+// ==========================================================================
+// WordPress Admin Customizations
+// ==========================================================================
+
+// Custom login page styling
+.login {
+    h1 a {
+        // Add custom login logo styling here
+        // Example:
+        // background-image: url('../images/logo-admin.png');
+        // background-size: contain;
+        // width: 200px;
+        // height: 80px;
+    }
+    
+    // Login form styling
+    #loginform {
+        // Example:
+        // border-radius: $border-radius-lg;
+        // box-shadow: $shadow-lg;
+        // background: $white;
+    }
+    
+    // Login button styling
+    .wp-core-ui .button-primary {
+        // Example:
+        // background-color: $primary-color;
+        // border-color: $primary-dark;
+        // border-radius: $border-radius;
+        // 
+        // &:hover {
+        //     background-color: $primary-dark;
+        // }
+    }
+}
+
+// Admin bar customizations
+#wpadminbar {
+    // Add admin bar customizations here
+    // Example:
+    // background: $primary-color;
+    // 
+    // .ab-item {
+    //     color: $white;
+    // }
+}
+
+// ==========================================================================
+// Custom Post Type Admin Styling
+// ==========================================================================
+
+// Add styling for custom post types admin pages
+.post-type-custom {
+    // Example custom post type styling
+    // .wp-list-table {
+    //     th, td {
+    //         padding: $spacing-sm;
+    //     }
+    // }
+}
+
+// ==========================================================================
+// Media Library Customizations
+// ==========================================================================
+
+// Add media library customizations here
+.media-modal {
+    // Example:
+    // .media-frame-title {
+    //     background: $primary-color;
+    //     color: $white;
+    // }
+}
+
+// ==========================================================================
+// Gutenberg Editor Customizations
+// ==========================================================================
+
+// Custom styles for the block editor
+.block-editor-page {
+    // Example:
+    // .editor-post-title__input {
+    //     font-family: $font-primary;
+    //     font-size: $font-size-xxl;
+    //     color: $gray-800;
+    // }
+}
+
+// ==========================================================================
+// Admin Dashboard Widgets
+// ==========================================================================
+
+// Custom dashboard widget styling
+#dashboard-widgets {
+    // Example:
+    // .postbox {
+    //     border-radius: $border-radius;
+    //     box-shadow: $shadow-sm;
+    //     
+    //     .postbox-header {
+    //         background: $gray-100;
+    //         border-bottom: 1px solid $border-color;
+    //     }
+    // }
+}

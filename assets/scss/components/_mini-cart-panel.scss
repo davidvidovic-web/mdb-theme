@@ -1,0 +1,370 @@
+@use 'sass:color';
+@use '../variables' as *;
+
+// =============================================================================
+// MDB Mini-Cart Side Panel
+// Standalone panel rendered in wp_footer. Opened/closed via custom.js.
+// WooCommerce keeps div.widget_shopping_cart_content updated via AJAX fragments.
+// =============================================================================
+
+// Prevent body scroll when panel is open.
+// padding-right compensates for the scrollbar disappearing so the page doesn't shift.
+body.mdb-cart-open {
+	overflow: hidden;
+	padding-right: var(--mdb-scrollbar-width, 0px);
+}
+
+#mdb-mini-cart {
+	position: fixed;
+	inset: 0;
+	z-index: 100000; // Above Elementor's fixed elements (z-index 9999)
+	pointer-events: none;
+
+	&[aria-hidden="false"] {
+		pointer-events: auto;
+
+		.mdb-mini-cart__overlay {
+			opacity: 1;
+		}
+
+		.mdb-mini-cart__panel {
+			transform: translateX(0);
+		}
+	}
+}
+
+.mdb-mini-cart__overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba($black, 0.45);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	cursor: pointer;
+}
+
+.mdb-mini-cart__panel {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: min(420px, 95vw);
+	background: $white;
+	display: flex;
+	flex-direction: column;
+	transform: translateX(100%);
+	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	overflow: hidden;
+	box-shadow: -4px 0 24px rgba($black, 0.15);
+}
+
+// Header bar
+.mdb-mini-cart__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 1.25rem;
+	background: $primary-color;
+	color: $white;
+	flex-shrink: 0;
+}
+
+.mdb-mini-cart__title {
+	font-weight: 600;
+	font-size: 0.95rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.mdb-mini-cart__close {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: $white;
+	padding: 0.25rem;
+	display: flex;
+	align-items: center;
+	border-radius: 4px;
+	transition: background 0.15s;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.15);
+	}
+}
+
+// Scrollable content area
+.mdb-mini-cart__body {
+	flex: 1;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+// =============================================================================
+// Cart content — supports both WooCommerce's standard template and
+// Elementor Pro's custom mini-cart template (classes differ).
+// =============================================================================
+
+.widget_shopping_cart_content {
+	padding: 1rem 1.25rem;
+}
+
+// Empty cart message
+#mdb-mini-cart .woocommerce-mini-cart__empty-message {
+	color: $gray-600;
+	text-align: center;
+	padding: 2rem 1rem;
+	font-style: italic;
+}
+
+// Product list — standard WC template
+#mdb-mini-cart .woocommerce-mini-cart {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#mdb-mini-cart .woocommerce-mini-cart-item {
+	display: flex;
+	gap: 0.75rem;
+	align-items: flex-start;
+	padding: 0.75rem 0;
+	border-bottom: 1px solid $gray-200;
+
+	&:last-child {
+		border-bottom: none;
+	}
+
+	img {
+		width: 64px;
+		height: 64px;
+		object-fit: cover;
+		border-radius: 4px;
+		flex-shrink: 0;
+	}
+
+	.mini_cart_item_details {
+		flex: 1;
+	}
+}
+
+// Product list — Elementor Pro template
+#mdb-mini-cart .elementor-menu-cart__products {
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+}
+
+#mdb-mini-cart .elementor-menu-cart__product {
+	display: grid;
+	grid-template-columns: 72px 1fr auto auto;
+	grid-template-rows: auto auto;
+	gap: 0.25rem 0.75rem;
+	align-items: start;
+	padding: 0.75rem 0;
+	border-bottom: 1px solid $gray-200;
+
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+#mdb-mini-cart .elementor-menu-cart__product-image {
+	grid-column: 1;
+	grid-row: 1 / 3;
+
+	img {
+		width: 72px;
+		height: 72px;
+		object-fit: cover;
+		border-radius: 4px;
+		display: block;
+	}
+}
+
+#mdb-mini-cart .elementor-menu-cart__product-name {
+	// grid-column: 2 / 4;
+    display: flex;
+    flex-direction: column;
+	font-weight: 500;
+
+	a { color: $gray-800; text-decoration: none; }
+	a:hover { color: $primary-color; }
+
+	dl.variation {
+		font-size: 0.75rem;
+		color: $gray-600;
+		margin: 0.25rem 0 0;
+	}
+}
+
+#mdb-mini-cart .elementor-menu-cart__product-price {
+	grid-column: 2;
+	font-size: 0.875rem;
+	color: $gray-700;
+}
+
+// Elementor renders two remove links per product. The first (elementor_remove_from_cart_button)
+// requires Elementor widget JS context. Hide it; use only WooCommerce's remove_from_cart_button
+// which our custom.js handles via AJAX.
+// Also hide uni-cpo-cart-action spans (custom product options plugin edit buttons).
+#mdb-mini-cart .elementor_remove_from_cart_button,
+#mdb-mini-cart .uni-cpo-cart-action {
+	display: none !important;
+}
+
+#mdb-mini-cart .elementor-menu-cart__product-remove {
+	grid-column: 4;
+	grid-row: 1;
+
+	.remove_from_cart_button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		text-decoration: none;
+		color: $gray-400;
+		font-size: 0; // hide any text/entity from the template
+		transition: background 0.15s, color 0.15s;
+
+		// Render a clean × via pseudo-element so it's always consistent
+		&::before {
+			content: '×';
+			font-size: 1.1rem;
+			line-height: 1;
+			color: inherit;
+		}
+
+		&:hover {
+			background: rgba($error-color, 0.1);
+			color: $error-color;
+		}
+
+		&.is-removing {
+			pointer-events: none;
+			opacity: 0.4;
+		}
+	}
+}
+
+// Subtotal row
+#mdb-mini-cart .elementor-menu-cart__subtotal,
+#mdb-mini-cart .woocommerce-mini-cart__total {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.875rem 1.25rem;
+	border-top: 2px solid $gray-200;
+	font-weight: 600;
+	font-size: 0.95rem;
+	background: $gray-100;
+	margin: 0 -1.25rem;
+}
+
+// Footer buttons
+#mdb-mini-cart .elementor-menu-cart__footer-buttons,
+#mdb-mini-cart .woocommerce-mini-cart__buttons {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 1rem 1.25rem;
+
+	a, button {
+		display: block;
+		width: 100%;
+		padding: 0.75rem 1rem;
+		text-align: center;
+		border-radius: 4px;
+		font-weight: 600;
+		font-size: 0.875rem;
+		text-decoration: none;
+		transition: background 0.15s, color 0.15s;
+		cursor: pointer;
+		border: none;
+	}
+
+	// "View Cart" button — outlined style
+	.elementor-button--view-cart,
+	.button.wc-forward:not(.checkout) {
+		background: $white;
+		color: $primary-color;
+		border: 2px solid $primary-color;
+
+		&:hover {
+			background: $primary-color;
+			color: $white;
+		}
+	}
+
+	// "Checkout" button — filled style
+	.elementor-button--checkout,
+	.button.checkout, .checkout-button {
+		background: $primary-color;
+		color: $white;
+
+		&:hover {
+			background: $primary-dark;
+		}
+	}
+}
+
+// "View/Hide Configuration" toggle button (injected by initMiniCartToggle in custom.js)
+#mdb-mini-cart .mdb-options-toggle-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	margin-top: 0.4rem;
+	padding: 0.25rem 0.65rem;
+	font-size: 0.7rem;
+	font-weight: 500;
+	letter-spacing: 0.02em;
+	color: $gray-600;
+	background: $gray-100;
+	border: 1px solid $gray-300;
+	border-radius: 99px;
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+	.mdb-chevron {
+		display: inline-block;
+		transition: transform 0.2s ease;
+		flex-shrink: 0;
+	}
+
+	&.active {
+		color: $primary-color;
+		border-color: $primary-color;
+		background: rgba($primary-color, 0.06);
+
+		.mdb-chevron {
+			transform: rotate(180deg);
+		}
+	}
+
+	&:hover:not(.active) {
+		background: $gray-200;
+		border-color: $gray-400;
+	}
+}
+
+// Options wrapper — jQuery slideToggle handles display; style the dl inside
+#mdb-mini-cart .mdb-options-wrapper {
+	p { margin: 0; }
+}
+
+#mdb-mini-cart .mdb-options-wrapper dl {
+	margin: 0.35rem 0 0;
+	font-size: 0.75rem;
+
+	dt {
+		font-weight: 600;
+		color: $gray-700;
+		display: block;
+		margin-top: 0.2rem;
+	}
+	dd {
+		color: $gray-600;
+		margin: 0;
+		display: block;
+	}
+}

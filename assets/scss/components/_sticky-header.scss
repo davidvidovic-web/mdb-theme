@@ -1,0 +1,394 @@
+// =============================================================================
+// Custom Sticky Header
+// Fully custom — zero Elementor classes. JS builds the HTML from scraped data.
+// =============================================================================
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// -----------------------------------------------------------------------------
+// Bar shell
+// -----------------------------------------------------------------------------
+.mdb-sticky-header {
+  position: fixed;
+  top: -120px;
+  left: 0;
+  width: 100%;
+  background: $white;
+  box-shadow: 0 2px 16px rgba($black, 0.1);
+  z-index: 99999;
+  transition: top 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &.is-visible {
+    top: 0;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Inner layout
+// -----------------------------------------------------------------------------
+.mdb-sticky-inner {
+  display: flex;
+  align-items: center;
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0.55rem 1.5rem;
+  gap: 1.75rem;
+}
+
+// -----------------------------------------------------------------------------
+// Logo
+// -----------------------------------------------------------------------------
+.mdb-sticky-logo {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+
+  img {
+    height: 44px;
+    width: auto;
+    display: block;
+    transition: height 0.25s ease;
+  }
+}
+
+// Favicon — shown on mobile instead of full logo to save horizontal space
+.mdb-sticky-favicon {
+  display: none; // activated in mobile breakpoint block
+  flex: 0 0 auto;
+  align-items: center;
+  text-decoration: none;
+
+  img {
+    width: 48px;
+    height: 48px;
+    display: block;
+    border-radius: 6px;
+    object-fit: contain;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Nav
+// -----------------------------------------------------------------------------
+.mdb-sticky-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.mdb-snav-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0.15rem;
+}
+
+.mdb-snav-item {
+  position: static; // critical: do not create a containing block for the dropdown
+}
+
+// Shared styles for both <a> and <button> nav links
+.mdb-snav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: $primary-dark;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: color 0.18s ease, background-color 0.18s ease;
+  line-height: 1.3;
+
+  &:hover,
+  &[aria-expanded="true"] {
+    color: $primary-color;
+    background-color: rgba($primary-color, 0.07);
+  }
+}
+
+.is-free-samples .mdb-snav-link {
+  color: $primary-light;
+  font-weight: 700;
+
+  &:hover {
+    color: $primary-light;
+    background-color: rgba($primary-light, 0.08);
+  }
+}
+
+.mdb-snav-chevron {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.mdb-snav-toggle[aria-expanded="true"] .mdb-snav-chevron {
+  transform: rotate(180deg);
+}
+
+// -----------------------------------------------------------------------------
+// Dropdown panel
+// -----------------------------------------------------------------------------
+.mdb-snav-dropdown {
+  position: fixed;
+  top: var(--sticky-header-height, 66px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: $white;
+  border-top: 3px solid $primary-color;
+  box-shadow: 0 8px 32px rgba($black, 0.13);
+  border-radius: 0 0 8px 8px;
+  padding: 1.5rem 2rem;
+  z-index: 99998;
+  // Width is driven by content; min/max keep it readable
+  min-width: 500px;
+  max-width: min(820px, 90vw);
+  width: max-content;
+}
+
+.mdb-snav-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem 1.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li a {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem 0.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    color: $primary-dark;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    img {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+
+    &:hover {
+      background-color: rgba($primary-color, 0.07);
+      color: $primary-color;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Right actions (CTA button + cart)
+// -----------------------------------------------------------------------------
+.mdb-sticky-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 0 0 auto;
+}
+
+// Pinned CTA button — cloned from .mdb-pin-to-sticky page elements
+@keyframes mdb-pin-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mdb-sticky-pinned-btn {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;   // ensure it centres in the sticky-inner flex row
+  padding: 0.6rem 1.3rem;
+  background: $primary-light;
+  color: $white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  animation: mdb-pin-in 0.22s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+
+  &:hover,
+  &:focus {
+    background: scale-color($primary-light, $lightness: -10%);
+    color: $white;
+    transform: translateY(-1px);
+  }
+}
+
+.mdb-sticky-view-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.3rem;
+  background: $primary-light;
+  color: $white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background: scale-color($primary-light, $lightness: -10%);
+    transform: translateY(-1px);
+  }
+}
+
+.mdb-sticky-cart {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  padding: 0.4rem;
+  color: $primary-dark !important;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: color 0.2s ease;
+
+  svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+  }
+
+  &:hover {
+    color: $primary-color;
+  }
+}
+
+.mdb-sticky-cart-count {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: $primary-light;
+  color: $white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// -----------------------------------------------------------------------------
+// Sticky hamburger button (mobile only; hidden on desktop)
+// -----------------------------------------------------------------------------
+.mdb-sticky-hamburger {
+  display: none; // shown in responsive block below
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 38px;
+  height: 38px;
+  padding: 7px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.18s ease;
+
+  &:hover,
+  &:focus {
+    background-color: rgba($primary-color, 0.08) !important;
+    border-color: transparent !important;
+    color: inherit !important;
+  }
+
+  &__bar {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: $primary-dark;
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    transform-origin: center;
+  }
+
+  &.is-open {
+    .mdb-sticky-hamburger__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .mdb-sticky-hamburger__bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .mdb-sticky-hamburger__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Tablet / Mobile — hide nav, show hamburger
+// -----------------------------------------------------------------------------
+@media (max-width: $breakpoint-md) {
+  .mdb-sticky-nav {
+    display: none;
+  }
+
+  .mdb-sticky-view-btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .mdb-sticky-hamburger {
+    display: flex;
+  }
+
+  // Nav is hidden on mobile, so actions must push itself to the far right.
+  .mdb-sticky-actions {
+    margin-left: auto;
+    gap: 0.25rem;      // matches .mdb-mobile-actions gap
+  }
+
+  // Match regular header bar height and padding on mobile.
+  .mdb-sticky-inner {
+    min-height: 64px;
+    padding: 10px;
+    gap: 0.75rem;
+  }
+
+  // Logo constrained to 100px wide on mobile; height scales automatically.
+  .mdb-sticky-logo {
+    display: flex;
+
+    img {
+      width: 100px;
+      height: auto;
+    }
+  }
+
+  // Favicon not used — keep hidden.
+  .mdb-sticky-favicon {
+    display: none;
+  }
+
+  // Tighten button padding on small screens.
+  .mdb-sticky-pinned-btn {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.78rem;
+  }
+}
+

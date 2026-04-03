@@ -1,0 +1,12 @@
+/*
+ * Admin SCSS Entry Point for MDB Theme
+ * 
+ * This file compiles to assets/css/admin.css and is loaded in the WordPress admin area.
+ */
+
+// Import variables and mixins
+@use 'variables';
+@use 'mixins';
+
+// Import admin-specific styles
+@use 'admin-styles';

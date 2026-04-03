@@ -1,0 +1,189 @@
+/*
+ * Mixins for MDB Theme
+ * 
+ * Reusable SCSS mixins for common styling patterns.
+ */
+
+// ==========================================================================
+// Layout Mixins
+// ==========================================================================
+
+// Flexbox centering
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// Flexbox between
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+// Container with max-width
+@mixin container($max-width: $container-max-width) {
+    max-width: $max-width;
+    margin: 0 auto;
+    padding: 0 $spacing-md;
+    
+    @media (max-width: $breakpoint-sm) {
+        padding: 0 $spacing-sm;
+    }
+}
+
+// ==========================================================================
+// Typography Mixins
+// ==========================================================================
+
+// Heading styles
+@mixin heading($size: $font-size-xl, $weight: $font-weight-bold) {
+    font-family: $font-primary;
+    font-size: $size;
+    font-weight: $weight;
+    line-height: $line-height-tight;
+    color: $gray-800;
+    margin-bottom: $spacing-md;
+}
+
+// Body text
+@mixin body-text($size: $font-size-base) {
+    font-family: $font-primary;
+    font-size: $size;
+    line-height: $line-height-normal;
+    color: $gray-700;
+}
+
+// ==========================================================================
+// Button Mixins
+// ==========================================================================
+
+// Base button styling
+@mixin button-base {
+    display: inline-block;
+    padding: $spacing-sm $spacing-lg;
+    border: none;
+    border-radius: $border-radius;
+    font-family: $font-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all $transition-speed $transition-easing;
+    
+    &:focus {
+        outline: 2px solid $primary-light;
+        outline-offset: 2px;
+    }
+}
+
+// Primary button
+@mixin button-primary {
+    @include button-base;
+    background-color: $primary-color;
+    color: $white;
+    
+    &:hover {
+        background-color: $primary-dark;
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+// Secondary button
+@mixin button-secondary {
+    @include button-base;
+    background-color: transparent;
+    color: $primary-color;
+    border: 2px solid $primary-color;
+    
+    &:hover {
+        background-color: $primary-color;
+        color: $white;
+    }
+}
+
+// ==========================================================================
+// Card Mixins
+// ==========================================================================
+
+// Basic card
+@mixin card {
+    background: $white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    padding: $spacing-lg;
+    transition: box-shadow $transition-speed $transition-easing;
+    
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+}
+
+// ==========================================================================
+// Responsive Mixins
+// ==========================================================================
+
+// Media query mixins
+@mixin mobile {
+    @media (max-width: #{$breakpoint-sm - 1px}) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: $breakpoint-sm) and (max-width: #{$breakpoint-md - 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: $breakpoint-md) {
+        @content;
+    }
+}
+
+@mixin large-desktop {
+    @media (min-width: $breakpoint-lg) {
+        @content;
+    }
+}
+
+// ==========================================================================
+// Utility Mixins
+// ==========================================================================
+
+// Visually hidden (accessible)
+@mixin visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+// Clearfix
+@mixin clearfix {
+    &::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+// Text truncation
+@mixin text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

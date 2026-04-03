@@ -1,0 +1,70 @@
+/*
+ * Main SCSS File for MDB Theme
+ * 
+ * This file serves as the main entry point for Sass compilation.
+ * Import all your partial files here and compile to /assets/css/main.css
+ */
+
+// ==========================================================================
+// Variables and Mixins
+// ==========================================================================
+@use 'variables';
+@use 'mixins';
+
+// ==========================================================================
+// Global Styles
+// ==========================================================================
+@use 'global';
+
+// ==========================================================================
+// Theme Specific Styles
+// ==========================================================================
+@use 'elementor-overrides';
+
+// ==========================================================================
+// Base Styles (Create these as needed)
+// ==========================================================================
+// @import 'base/reset';
+// @import 'base/typography';
+// @import 'base/forms';
+
+// ==========================================================================
+// Layout
+// ==========================================================================
+@use 'layout/header';
+// @use 'layout/footer';
+// @use 'layout/sidebar';
+// @use 'layout/grid';
+
+// ==========================================================================
+// Components (Create these as needed)
+// ==========================================================================
+// @import 'components/buttons';
+// @import 'components/cards';
+// @import 'components/navigation';
+// @import 'components/modals';
+@use 'components/checkout-progress';
+@use 'components/woocommerce-overrides';
+@use 'components/sticky-header';
+@use 'components/mini-cart-panel';
+
+
+// ==========================================================================
+// Pages
+// ==========================================================================
+@use 'pages/shop-archive';
+@use 'pages/single-product';
+@use 'pages/my-account';
+
+// ==========================================================================
+// Pages (Create these as needed)
+// ==========================================================================
+// @import 'pages/home';
+// @import 'pages/about';
+// @import 'pages/contact';
+
+// ==========================================================================
+// Utilities (Create these as needed)
+// ==========================================================================
+// @import 'utilities/helpers';
+// @import 'utilities/responsive';

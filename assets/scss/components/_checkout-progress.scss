@@ -1,0 +1,133 @@
+// Checkout Progress Component
+// ==========================================================================
+// SCSS for the Checkout Progress Step Indicator
+// ==========================================================================
+
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// Soft tints using allowed palette via opacity
+$mdb-step-line: rgba($topbar-bg, 0.2);
+$mdb-step-line-strong: rgba($topbar-bg, 0.45);
+
+.mdb-checkout-progress {
+    width: 100%;
+    margin-bottom: 0; // Removed margin bottom as hero handles spacing
+    padding: 1rem 0;
+    
+    &__list {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start; // Align top so labels can grow if needed
+        list-style: none;
+        padding: 0 1rem; // small gutter so the line doesn’t hug edges
+        margin: 0;
+        position: relative;
+        width: 100%;
+        max-width: none;
+        
+        // The connecting line
+        &::before {
+            content: '';
+            position: absolute;
+            top: 20px; // Center vertically with the 40px circle
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: $mdb-step-line;
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+    }
+    
+    &__step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        text-align: center;
+        color: $topbar-bg;
+        
+        // Active/Completed States
+        &--active {
+            .mdb-checkout-progress__indicator {
+                border-color: $teal-accent;
+                background-color: $teal-accent;
+                color: $white;
+                font-weight: bold;
+                transform: scale(1.1); // Subtle pop
+                box-shadow: 0 0 0 4px rgba($teal-accent, 0.25);
+            }
+            
+            .mdb-checkout-progress__label {
+                color: $topbar-bg;
+                font-weight: 700;
+            }
+        }
+        
+        &--completed {
+            .mdb-checkout-progress__indicator {
+                background-color: $topbar-bg;
+                border-color: $topbar-bg;
+                color: $white;
+            }
+            .mdb-checkout-progress__label {
+                color: $topbar-bg;
+                font-weight: 600;
+            }
+        }
+    }
+    
+    &__indicator {
+        width: 40px; // Slightly larger for readability
+        height: 40px;
+        border-radius: 50%;
+        background-color: $white;
+        border: 2px solid $mdb-step-line-strong;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: $topbar-bg;
+        // Ensure numbers look nice
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+    }
+    
+    &__label {
+        font-size: 0.85rem;
+        color: $topbar-bg;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background-color: transparent; // Let hero bg show
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+}
+
+
+// Hero Wrapper for Cart/Checkout
+.mdb-checkout-hero {
+    background-color: $white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    text-align: center;
+    
+    h1 {
+        margin-bottom: 2rem;
+        color: $topbar-bg;
+    }
+
+    // Ensure container exists/centers if theme doesn't provide it
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+}
+

@@ -1,0 +1,9 @@
+# Screenshot Placeholder
+
+To add a screenshot for your child theme:
+
+1. Create a screenshot of your theme (1200x900 pixels recommended)
+2. Save it as `screenshot.png` or `screenshot.jpg` in this directory
+3. The screenshot will appear in the WordPress admin under Appearance > Themes
+
+The screenshot should show what your child theme looks like when activated.
