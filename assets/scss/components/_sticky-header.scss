@@ -201,10 +201,38 @@
   flex: 0 0 auto;
 }
 
+// -----------------------------------------------------------------------------
+// Header element entrance — plays each time .is-visible is toggled on
+// -----------------------------------------------------------------------------
+@keyframes mdb-header-el-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mdb-sticky-header.is-visible {
+  .mdb-sticky-logo,
+  .mdb-sticky-favicon {
+    animation: mdb-header-el-in 0.3s ease 0.1s both;
+  }
+
+  .mdb-sticky-nav {
+    animation: mdb-header-el-in 0.3s ease 0.15s both;
+  }
+
+  .mdb-sticky-actions {
+    animation: mdb-header-el-in 0.3s ease 0.2s both;
+  }
+}
+
 // Pinned CTA button — cloned from .mdb-pin-to-sticky page elements
 @keyframes mdb-pin-in {
-  from { opacity: 0; transform: translateY(-5px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+@keyframes mdb-pin-out {
+  from { opacity: 1; transform: translateY(0)   scale(1); }
+  to   { opacity: 0; transform: translateY(-8px) scale(0.95); }
 }
 
 .mdb-sticky-pinned-btn {
@@ -225,14 +253,25 @@
   white-space: nowrap;
   letter-spacing: 0.03em;
   line-height: 1.2;
-  animation: mdb-pin-in 0.22s ease;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+  animation: mdb-pin-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 
   &:hover,
   &:focus {
     background: scale-color($primary-light, $lightness: -10%);
     color: $white;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($primary-light, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &.is-leaving {
+    animation: mdb-pin-out 0.2s ease forwards;
+    pointer-events: none;
   }
 }
 
@@ -257,7 +296,8 @@
   }
 }
 
-.mdb-sticky-cart {
+.mdb-sticky-cart,
+.mdb-sticky-account {
   display: inline-flex;
   align-items: center;
   position: relative;
@@ -277,7 +317,7 @@
   }
 
   &:hover {
-    color: $primary-color;
+    color: $white !important;
   }
 }
 
@@ -355,6 +395,10 @@
 
   .mdb-sticky-hamburger {
     display: flex;
+  }
+
+  .mdb-sticky-account {
+    display: none;
   }
 
   // Nav is hidden on mobile, so actions must push itself to the far right.

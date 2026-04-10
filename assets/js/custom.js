@@ -51,6 +51,9 @@
         var cartUrl   = $cartBtn.data('cart-url') || '/cart/';
         var cartCount = parseInt($mainHeader.find('.mdb-topbar-cart-count').text().trim()) || 0;
 
+        // Account
+        var accountUrl = $mainHeader.find('.mdb-topbar-login').attr('href') || '/my-account/';
+
         // Free Samples link (rendered separately from the nav menu in the main bar)
         var $fsSample       = $mainHeader.find('.mdb-header-free-samples').first();
         var freeSamplesHref = $fsSample.attr('href') || '/free-samples/';
@@ -95,6 +98,7 @@
         // ------------------------------------------------------------------
 
         var cartSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" aria-hidden="true"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/></svg>';
+        var accountSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>';
         var chevronSvg = '<svg class="mdb-snav-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" aria-hidden="true"><path d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></svg>';
 
         var navHtml = '';
@@ -145,6 +149,9 @@
                             cartSvg +
                             '<span class="mdb-sticky-cart-count"' + countVisible + '>' + cartCount + '</span>' +
                         '</button>' +
+                        '<a class="mdb-sticky-account" href="' + accountUrl + '" aria-label="My Account">' +
+                            accountSvg +
+                        '</a>' +
                         '<button class="mdb-sticky-hamburger" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mdb-mobile-drawer">' +
                             '<span class="mdb-sticky-hamburger__bar"></span>' +
                             '<span class="mdb-sticky-hamburger__bar"></span>' +
@@ -238,59 +245,71 @@
         var pinIdCounter  = 0;
 
         function syncPinnedButtons() {
+            // Assign stable IDs on first pass.
             $('.mdb-pin-to-sticky').each(function() {
                 var $pin = $(this);
-
-                // Assign a stable ID to this pin source on first pass.
                 if (!$pin.data('mdb-pin-id')) {
                     $pin.data('mdb-pin-id', 'mdbpin-' + (++pinIdCounter));
                 }
-                var pinId    = $pin.data('mdb-pin-id');
-                var isAbove  = this.getBoundingClientRect().bottom < 0;
-                var $cloneEl = $actionsSlot.find('[data-mdb-pin-id="' + pinId + '"]');
+            });
 
-                if (isAbove && !$cloneEl.length) {
-                    // When .mdb-pin-to-sticky is placed on an Elementor widget wrapper
-                    // (a div), resolve the inner <a> so we get the correct href.
-                    var $pinLink = $pin.is('a, button') ? $pin : $pin.find('a, button').first();
-
-                    // Prefer Elementor's dedicated text span; fall back to element text.
-                    var text = ($pin.find('.elementor-button-text').first().text().trim()
-                        || $pin.find('.mdb-btn-text').first().text().trim()
-                        || $pin.text().trim());
-
-                    var href   = $pinLink.is('a') ? ($pinLink.attr('href') || null) : null;
-                    var target = $pinLink.attr('target') || null;
-                    var $clone;
-
-                    if (href) {
-                        $clone = $('<a class="mdb-sticky-pinned-btn"></a>')
-                            .attr('href', href)
-                            .attr('target', target)
-                            .text(text);
-                    } else {
-                        $clone = $('<button class="mdb-sticky-pinned-btn" type="button"></button>')
-                            .text(text);
-                        // Proxy clicks to the resolved interactive element.
-                        $clone.on('click', function() {
-                            ($pinLink.length ? $pinLink[0] : $pin[0]).click();
-                        });
-                    }
-
-                    // Do NOT copy Elementor/theme classes — our styling is self-contained.
-                    $clone.attr('data-mdb-pin-id', pinId);
-
-                    // Insert before the cart icon.
-                    $actionsSlot.find('.mdb-sticky-cart').before($clone);
-                    $stickyHeader.addClass('has-pinned-btn');
-
-                } else if (!isAbove && $cloneEl.length) {
-                    $cloneEl.remove();
-                    if (!$actionsSlot.find('.mdb-sticky-pinned-btn').length) {
-                        $stickyHeader.removeClass('has-pinned-btn');
-                    }
+            // Find only the first .mdb-pin-to-sticky that has scrolled above the viewport.
+            // Subsequent ones are ignored so only one button ever appears in the sticky header.
+            var $firstAbove = null;
+            $('.mdb-pin-to-sticky').each(function() {
+                if (this.getBoundingClientRect().bottom < 0) {
+                    $firstAbove = $(this);
+                    return false; // break — we only want the topmost one
                 }
             });
+
+            var activePinId = $firstAbove ? $firstAbove.data('mdb-pin-id') : null;
+
+            // Remove any clones whose source is no longer the active pin.
+            $actionsSlot.find('.mdb-sticky-pinned-btn').each(function() {
+                if ($(this).attr('data-mdb-pin-id') !== activePinId) {
+                    var $leaving = $(this);
+                    if ($leaving.hasClass('is-leaving')) return; // already animating out
+                    $leaving.addClass('is-leaving');
+                    $leaving.one('animationend', function() { $(this).remove(); });
+                }
+            });
+
+            // Only clear the has-pinned-btn class when no button remains (including those animating out).
+            if (!$actionsSlot.find('.mdb-sticky-pinned-btn:not(.is-leaving)').length) {
+                $stickyHeader.removeClass('has-pinned-btn');
+            }
+
+            // Insert a clone for the active pin if one isn't already present.
+            if ($firstAbove && !$actionsSlot.find('[data-mdb-pin-id="' + activePinId + '"]').length) {
+                var $pin     = $firstAbove;
+                var $pinLink = $pin.is('a, button') ? $pin : $pin.find('a, button').first();
+
+                var text = ($pin.find('.elementor-button-text').first().text().trim()
+                    || $pin.find('.mdb-btn-text').first().text().trim()
+                    || $pin.text().trim());
+
+                var href   = $pinLink.is('a') ? ($pinLink.attr('href') || null) : null;
+                var target = $pinLink.attr('target') || null;
+                var $clone;
+
+                if (href) {
+                    $clone = $('<a class="mdb-sticky-pinned-btn"></a>')
+                        .attr('href', href)
+                        .attr('target', target)
+                        .text(text);
+                } else {
+                    $clone = $('<button class="mdb-sticky-pinned-btn" type="button"></button>')
+                        .text(text);
+                    $clone.on('click', function() {
+                        ($pinLink.length ? $pinLink[0] : $pin[0]).click();
+                    });
+                }
+
+                $clone.attr('data-mdb-pin-id', activePinId);
+                $actionsSlot.find('.mdb-sticky-cart').before($clone);
+                $stickyHeader.addClass('has-pinned-btn');
+            }
         }
 
         // Run once on load in case the page was already scrolled (e.g. back-navigation).
