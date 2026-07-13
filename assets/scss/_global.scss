@@ -29,16 +29,143 @@ body {
   overflow-x: hidden;
 }
 
-// ==========================================================================
-// Button / Submit — override parent theme defaults
-// ==========================================================================
-[type="button"]:focus,
-[type="button"]:hover,
-[type="submit"]:focus,
-[type="submit"]:hover,
-button:focus,
-button:hover {
-  background-color: $primary-light !important;
-  color: $white !important;
-  border-color: $primary-light !important;
+// Restore the parent theme's non-invasive base typography and content-width
+// behavior without bringing back its global form/button resets.
+body {
+  background-color: $white;
+  color: $secondary-dark;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: inherit;
+  font-family: inherit;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-tight;
+  margin-block-start: 0.5rem;
+  margin-block-end: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-block-start: 0;
+  margin-block-end: 0.9rem;
+}
+
+img {
+  border-style: none;
+  height: auto;
+  max-width: 100%;
+}
+
+.page-header .entry-title,
+.site-footer .footer-inner,
+.site-header .header-inner,
+body:not([class*="elementor-page-"]) .site-main {
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+  width: 100%;
+}
+
+@media (max-width: 575px) {
+  .page-header .entry-title,
+  .site-footer .footer-inner,
+  .site-header .header-inner,
+  body:not([class*="elementor-page-"]) .site-main {
+    padding-inline-start: 10px;
+    padding-inline-end: 10px;
+  }
+}
+
+@media (min-width: 576px) {
+  .page-header .entry-title,
+  .site-footer .footer-inner,
+  .site-header .header-inner,
+  body:not([class*="elementor-page-"]) .site-main {
+    max-width: 500px;
+  }
+
+  .site-footer.footer-full-width .footer-inner,
+  .site-header.header-full-width .header-inner {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .page-header .entry-title,
+  .site-footer .footer-inner,
+  .site-header .header-inner,
+  body:not([class*="elementor-page-"]) .site-main {
+    max-width: 600px;
+  }
+
+  .site-footer.footer-full-width,
+  .site-header.header-full-width {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .page-header .entry-title,
+  .site-footer .footer-inner,
+  .site-header .header-inner,
+  body:not([class*="elementor-page-"]) .site-main {
+    max-width: 800px;
+  }
+
+  .site-footer.footer-full-width,
+  .site-header.header-full-width {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-header .entry-title,
+  .site-footer .footer-inner,
+  .site-header .header-inner,
+  body:not([class*="elementor-page-"]) .site-main {
+    max-width: 1140px;
+  }
+
+  .site-footer.footer-full-width,
+  .site-header.header-full-width {
+    max-width: 100%;
+  }
+}
+
+// Global element rules stay intentionally minimal.
+// Theme button styling must remain scoped to MDB components so WordPress and
+// plugin interfaces keep their own native/admin presentation.

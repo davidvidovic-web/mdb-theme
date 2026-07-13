@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+uni-woo-custom-product-options-premium/
 
 # Source maps
 assets/css/*.map

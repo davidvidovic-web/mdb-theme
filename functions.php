@@ -10,22 +10,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Enqueue parent and child theme styles
+ * Disable Hello Biz's generic base theme stylesheet.
+ *
+ * We keep the parent header/footer layer, but the broad button/form resets in
+ * hello-biz/assets/css/theme.css should not leak into this child theme.
+ */
+function mdb_theme_hide_hello_biz_base_styles( $hide ) {
+	return true;
+}
+add_filter( 'hello-plus-theme/settings/hello_theme', 'mdb_theme_hide_hello_biz_base_styles' );
+
+/**
+ * Enqueue child theme styles
  */
 function hello_biz_child_enqueue_styles() {
-	// Enqueue parent theme stylesheet
-	wp_enqueue_style( 
-		'hello-biz-parent-style', 
-		get_template_directory_uri() . '/style.css',
-		array(),
-		wp_get_theme()->parent()->get('Version')
-	);
-	
-	// Build dependency list — always after the parent, and after every
+	// Build dependency list — always after the parent header/footer layer and after every
 	// WooCommerce stylesheet that is actually registered on this request.
 	// This guarantees our overrides cascade on top of WC defaults regardless
 	// of which WC style handles are present (classic vs. block themes, etc.).
-	$dependencies = array( 'hello-biz-parent-style' );
+	$dependencies = array();
+
+	if ( wp_style_is( 'hello-biz-header-footer', 'registered' ) || wp_style_is( 'hello-biz-header-footer', 'enqueued' ) ) {
+		$dependencies[] = 'hello-biz-header-footer';
+	}
 	
 	if ( class_exists( 'WooCommerce' ) ) {
 		$wc_handles = array(
@@ -49,7 +56,7 @@ function hello_biz_child_enqueue_styles() {
 		'hello-biz-child-style',
 		get_stylesheet_directory_uri() . '/assets/css/main.css',
 		$dependencies,
-		file_exists( get_stylesheet_directory() . '/assets/css/main.css' ) ? filemtime( get_stylesheet_directory() . '/assets/css/main.css' ) : wp_get_theme()->get('Version')
+		file_exists( get_stylesheet_directory() . '/assets/css/main.css' ) ? filemtime( get_stylesheet_directory() . '/assets/css/main.css' ) : wp_get_theme()->get( 'Version' )
 	);
 }
 add_action( 'wp_enqueue_scripts', 'hello_biz_child_enqueue_styles', 99 );
