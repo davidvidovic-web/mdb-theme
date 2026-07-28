@@ -3,6 +3,20 @@
 @use "../mixins" as *;
 
 .single-product {
+  // Keep WooCommerce breadcrumb in markup for crawlers/SEO, but hide from users.
+  .woocommerce-breadcrumb {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
   // Hide the default WC product gallery (Left side)
   // as per the mockup, the product page is all options.
   #primary {
@@ -11,13 +25,17 @@
   }
 
   div.product {
-    display: flex;
-    flex-direction: column;
+    // Configurator layout (.mdb-configurator grid) is a direct child —
+    // let it control its own layout. Remove the flex column that would
+    // otherwise constrain the two-column grid width.
+    display: block;
 
     .woocommerce-product-gallery {
       display: none !important;
     }
 
+    // .summary.entry-summary is not rendered in the configurator template;
+    // keep the rule so any fallback WC template still looks reasonable.
     .summary.entry-summary {
       width: 100% !important;
       float: none !important;
@@ -43,12 +61,27 @@
       transition: color 0.2s ease;
 
       .icon {
+        display: inline-grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
         border: 1px solid $gray-300;
         border-radius: 4px;
-        padding: 0.2rem 0.5rem;
+        padding: 0;
         margin-right: 0.75rem;
+        font-size: 0;
+        line-height: 0;
         font-weight: 400;
         background: $white;
+        color: currentColor;
+
+        &::before {
+          content: "\2190";
+          display: block;
+          font-size: 1.25rem;
+          line-height: 1;
+          font-weight: 500;
+        }
       }
 
       &:hover {
@@ -84,7 +117,7 @@
     width: 100%;
     background: $white;
     border: 1px solid $primary-light;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 2.5rem;
     position: sticky;
     top: 100px;
@@ -163,7 +196,7 @@
         color: $primary-dark;
         border: 2px solid $primary-dark;
         padding: 1rem;
-        border-radius: 6px;
+        border-radius: 4px;
         font-weight: 700;
         text-transform: uppercase;
         width: 100%;
@@ -184,7 +217,7 @@
         background: $primary-color !important;
         color: $white !important;
         border: none !important;
-        border-radius: 6px !important;
+        border-radius: 4px !important;
         padding: 1.25rem !important;
         font-size: 1.1rem !important;
         font-weight: 700 !important;
@@ -469,7 +502,7 @@
             width: 100%;
             padding: 0.65rem 0.9rem;
             border: 1px solid $gray-300;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: $font-size-sm;
             color: $gray-800;
             background: $white;
@@ -495,7 +528,7 @@
             color: $white;
             border: none;
             padding: 0.65rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: $font-size-sm;
             font-weight: $font-weight-semibold;
             cursor: pointer;

@@ -1,0 +1,135 @@
+@use "../variables" as *;
+
+.mdb-404-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 1.5rem 0 3.5rem;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(circle at 100% 0%, rgba($teal-accent, 0.16) 0, rgba($teal-accent, 0) 42%),
+      linear-gradient(180deg, rgba($primary-color, 0.03) 0%, rgba($white, 0.98) 100%);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "404";
+    position: absolute;
+    right: clamp(-1rem, 1.5vw, 2rem);
+    top: clamp(2.6rem, 9vw, 5.8rem);
+    z-index: -1;
+    font-size: clamp(8rem, 30vw, 24rem);
+    line-height: 0.9;
+    color: rgba($primary-dark, 0.06);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+.mdb-404-hero {
+  .container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+}
+
+.mdb-404-card {
+  position: relative;
+  z-index: 1;
+//   border-top: 1px solid $gray-200;
+//   border-bottom: 1px solid $gray-200;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  padding: 2.25rem 1.25rem;
+  background: transparent;
+  box-shadow: none;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: 3.2rem 2.4rem;
+  }
+}
+
+.mdb-404-kicker {
+  margin: 0 0 0.85rem;
+  color: $teal-accent;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.mdb-404-card h1 {
+  margin: 0;
+  max-width: 18ch;
+  color: $topbar-bg;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.05;
+  font-weight: 800;
+}
+
+.mdb-404-copy {
+  margin: 1rem 0 0;
+  max-width: 62ch;
+  color: $gray-700;
+  font-size: 1.03rem;
+  line-height: 1.7;
+}
+
+.mdb-404-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+
+.mdb-404-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.72rem 1.2rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+
+  &:hover {
+    transform: none;
+  }
+}
+
+.mdb-404-btn--primary {
+  color: $white;
+  background: $topbar-bg;
+  border: 1px solid $topbar-bg;
+  box-shadow: none;
+
+  &:hover {
+    background: $primary-color;
+    border-color: $primary-color;
+    color: $white;
+  }
+}
+
+.mdb-404-btn--ghost {
+  color: $topbar-bg;
+  background: transparent;
+  border: 1px solid $gray-300;
+
+  &:hover {
+    border-color: $teal-accent;
+    color: $teal-accent;
+  }
+}

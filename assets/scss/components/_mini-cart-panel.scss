@@ -310,31 +310,35 @@ body.mdb-cart-open {
 
 // "View/Hide Configuration" toggle button (injected by initMiniCartToggle in custom.js)
 #mdb-mini-cart .mdb-options-toggle-btn {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
 	gap: 0.3rem;
 	margin-top: 0.4rem;
 	padding: 0.25rem 0.65rem;
-	font-size: 0.7rem;
-	font-weight: 500;
+	width: 100%;
+	justify-content: space-between;
+	text-align: left;
+	font-size: 0.72rem;
+	font-weight: 600;
 	letter-spacing: 0.02em;
-	color: $gray-600;
+	color: $gray-700;
 	background: $gray-100;
 	border: 1px solid $gray-300;
-	border-radius: 99px;
+	border-radius: 4px;
 	cursor: pointer;
 	transition: background 0.15s, color 0.15s, border-color 0.15s;
 
 	.mdb-chevron {
 		display: inline-block;
+		margin-left: auto;
 		transition: transform 0.2s ease;
 		flex-shrink: 0;
 	}
 
 	&.active {
-		color: $primary-color;
-		border-color: $primary-color;
-		background: rgba($primary-color, 0.06);
+		color: $primary-dark;
+		border-color: $primary-light;
+		background: rgba($primary-color, 0.08);
 
 		.mdb-chevron {
 			transform: rotate(180deg);
@@ -349,22 +353,33 @@ body.mdb-cart-open {
 
 // Options wrapper — jQuery slideToggle handles display; style the dl inside
 #mdb-mini-cart .mdb-options-wrapper {
+	margin-top: 0.45rem;
+	padding: 0.65rem 0.75rem;
+	border: 1px solid $gray-200;
+	border-radius: 4px;
+	background: $gray-100;
+
 	p { margin: 0; }
 }
 
 #mdb-mini-cart .mdb-options-wrapper dl {
-	margin: 0.35rem 0 0;
-	font-size: 0.75rem;
+	margin: 0;
+	font-size: 0.8rem;
 
 	dt {
 		font-weight: 600;
-		color: $gray-700;
+		color: $gray-800;
 		display: block;
-		margin-top: 0.2rem;
+		margin: 0.15rem 0 0;
 	}
 	dd {
 		color: $gray-600;
 		margin: 0;
 		display: block;
+
+		p {
+			margin: 0;
+			line-height: inherit;
+		}
 	}
 }

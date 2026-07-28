@@ -11,7 +11,7 @@
     // Document ready function
     $(document).ready(function() {
         initMiniCartToggle();
-        initProductLayout();
+        initCartCheckoutConfigToggle();
         initCartButtons();
         initMobileMenu();
         initAccountAjaxNav();
@@ -222,9 +222,6 @@
                 if (!isStickyActive) {
                     isStickyActive = true;
                     $stickyHeader.addClass('is-visible');
-                    document.documentElement.style.setProperty(
-                        '--sticky-header-height', $stickyHeader[0].offsetHeight + 'px'
-                    );
                 }
             } else {
                 if (isStickyActive) {
@@ -316,69 +313,11 @@
         syncPinnedButtons();
     }
 
-    // Product Page Custom Layout restructuring
+    // Legacy Product Page JS layout restructuring (disabled).
+    // The single-product layout is rendered server-side in
+    // woocommerce/content-single-product.php to avoid load-time reflow.
     function initProductLayout() {
-        // Only run on the single product page
-        if (!$('body.single-product').length) return;
-        
-        var $form = $('form.cart');
-        if (!$form.length) return;
-        
-        // Add layout class to form
-        $form.addClass('mdb-product-layout');
-        
-        // 1. Wrap the options module
-        $('#uni_cpo_options').wrap('<div class="mdb-product-main"></div>');
-        
-        // 2. Create the Sidebar
-        var $sidebar = $('<div class="mdb-product-sidebar"></div>');
-        $form.append($sidebar);
-        
-        // 3. Populate Sidebar Content
-        $sidebar.append('<h3 class="mdb-summary-heading">Order Summary</h3>');
-        
-        // Move the product title
-        $sidebar.append($('.product_title'));
-        
-        // Ensure NBO summary wrapper exists or move it
-        var $nboWrapper = $('.uni-cpo-summary');
-        if (!$nboWrapper.length) {
-             // Fallback if not physically present yet
-             $nboWrapper = $('<div class="uni-cpo-summary"></div>');
-        }
-        $sidebar.append($nboWrapper);
-        
-        // Pricing block
-        var $priceWrap = $('<div class="mdb-summary-price"><span>Total Price:</span></div>');
-        var $dynamicPrice = $('#uni_cpo_pricedisplay_roller');
-        if ($dynamicPrice.length) {
-            $priceWrap.append($dynamicPrice);
-        } else {
-            $priceWrap.append($('.price').not('.mdb-summary-price .price').first());
-        }
-        $sidebar.append($priceWrap);
-        
-        // Actions block
-        var $actions = $('<div class="mdb-summary-actions"></div>');
-        
-        // If uni calculate button is used, move it
-        var $calcBtn = $('.uni-cpo-calculate-btn');
-        if ($calcBtn.length) {
-            $actions.append($calcBtn);
-        }
-        
-        $actions.append($('.quantity'));
-        $actions.append($('.single_add_to_cart_button'));
-        
-        $sidebar.append($actions);
-        
-        // Secure payments footer
-        $sidebar.append('<div class="mdb-secure-payments">Secure Payments via<br><img src="/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/visa.svg" alt="Visa" style="display:inline-block;width:40px;margin:5px;" /><img src="/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/mastercard.svg" alt="Mastercard" style="display:inline-block;width:40px;margin:5px;" /><img src="/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/amex.svg" alt="Amex" style="display:inline-block;width:40px;margin:5px;" /></div>');
-        
-        // Optionally inject step labels (STEP 1, STEP 2) iteratively over uni_rows
-        $('.uni-builderius-container > [id^="uni_row_"]').each(function(index) {
-            $(this).attr('data-step-title', 'STEP ' + (index + 1));
-        });
+        return;
     }
     
     // Mini Cart Variations Toggle
@@ -434,6 +373,115 @@
         // Elementor menu cart specific observer just in case
         $(document).on('click', '.elementor-menu-cart__toggle_button', function() {
             setTimeout(enhanceVariations, 100);
+        });
+    }
+
+    // Cart + checkout item configuration toggle (dl.variation show/hide)
+    function initCartCheckoutConfigToggle() {
+        var chevronSvg = '<svg class="mdb-chevron" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+        function buttonLabel(isOpen) {
+            return (isOpen ? 'Hide Configuration ' : 'View Configuration ') + chevronSvg;
+        }
+
+        function enhance() {
+            var legacySelectors = [
+                'body.woocommerce-cart td.product-name dl.variation:not(.mdb-toggled)',
+                '.elementor-widget-woocommerce-cart td.product-name dl.variation:not(.mdb-toggled)',
+                'body.woocommerce-checkout #order_review td.product-name dl.variation:not(.mdb-toggled)',
+                '.elementor-widget-woocommerce-checkout #order_review td.product-name dl.variation:not(.mdb-toggled)'
+            ];
+
+            // Legacy templates: variation data rendered as dl.variation.
+            $(legacySelectors.join(', ')).each(function() {
+                var $dl = $(this);
+                var $cell = $dl.closest('td.product-name');
+                if (!$cell.length) return;
+
+                $dl.addClass('mdb-toggled');
+
+                var $btn = $('<button type="button" class="mdb-options-toggle-btn mdb-options-toggle-btn--table" aria-expanded="false">' + buttonLabel(false) + '</button>');
+
+                $dl.wrap('<div class="mdb-options-wrapper mdb-options-wrapper--table" style="display: none;"></div>');
+                $dl.parent().before($btn);
+            });
+
+            var blockSelectors = [
+                '.wc-block-cart-item__wrap .wc-block-components-product-details:not(.mdb-toggled)',
+                '.wc-block-components-order-summary-item__description .wc-block-components-product-details:not(.mdb-toggled)'
+            ];
+
+            // WooCommerce Blocks: option data rendered as .wc-block-components-product-details.
+            $(blockSelectors.join(', ')).each(function() {
+                var $details = $(this);
+
+                // Only toggle real option lists, not empty metadata shells.
+                if (!$details.find('.wc-block-components-product-details__name').length) return;
+
+                $details.addClass('mdb-toggled');
+
+                var $btn = $('<button type="button" class="mdb-options-toggle-btn mdb-options-toggle-btn--table mdb-options-toggle-btn--blocks" aria-expanded="false">' + buttonLabel(false) + '</button>');
+
+                $details.wrap('<div class="mdb-options-wrapper mdb-options-wrapper--table mdb-options-wrapper--blocks" style="display: none;"></div>');
+                $details.parent().before($btn);
+            });
+        }
+
+        // Use delegated click handling so controls keep working after React re-renders.
+        $(document)
+            .off('click.mdbConfigToggle')
+            .on('click.mdbConfigToggle', '.mdb-options-toggle-btn--table', function(e) {
+                e.preventDefault();
+
+                var $this = $(this);
+                var $wrapper = $this.siblings('.mdb-options-wrapper--table').first();
+                if (!$wrapper.length) {
+                    $wrapper = $this.next('.mdb-options-wrapper--table').first();
+                }
+                if (!$wrapper.length) return;
+
+                $wrapper.stop(true, true).slideToggle(200);
+                $this.toggleClass('active');
+
+                var isOpen = $this.hasClass('active');
+                $this.attr('aria-expanded', isOpen ? 'true' : 'false');
+                $this.html(buttonLabel(isOpen));
+            });
+
+        enhance();
+
+        // Blocks can finish rendering after document.ready.
+        setTimeout(enhance, 150);
+        setTimeout(enhance, 600);
+        setTimeout(enhance, 1200);
+
+        // Observe cart/checkout block roots for React-driven markup updates.
+        var observer;
+        var observerTimer;
+        function observeBlockRoots() {
+            if (observer) return;
+
+            var roots = document.querySelectorAll('.wc-block-cart, .wc-block-checkout');
+            if (!roots.length) return;
+
+            observer = new MutationObserver(function() {
+                if (observerTimer) {
+                    window.clearTimeout(observerTimer);
+                }
+                observerTimer = window.setTimeout(enhance, 80);
+            });
+
+            roots.forEach(function(root) {
+                observer.observe(root, { childList: true, subtree: true });
+            });
+        }
+        observeBlockRoots();
+        setTimeout(observeBlockRoots, 300);
+
+        // Cart and checkout rows are frequently re-rendered via AJAX.
+        $(document.body).on('updated_wc_div updated_cart_totals updated_checkout', enhance);
+        $(document).ajaxComplete(function() {
+            enhance();
         });
     }
     

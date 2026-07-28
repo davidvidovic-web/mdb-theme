@@ -160,7 +160,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   line-height: 18px;
-  border-radius: 9px;
+  border-radius: 4px;
   text-align: center;
 
   &.is-hidden {
@@ -306,7 +306,7 @@
   width: max-content;
   max-width: min(820px, 90vw);
   background: $white;
-  border-top: 3px solid $primary-color;
+  // border-top: 3px solid $primary-color;
   box-shadow: 0 8px 28px rgba($black, 0.13);
   z-index: 9001;
 }
@@ -442,7 +442,7 @@
 .mdb-mobile-drawer {
   position: fixed;
   inset: 0;
-  z-index: 99998;
+  z-index: 99999999;
   pointer-events: none;
 
   &[aria-hidden="false"] {

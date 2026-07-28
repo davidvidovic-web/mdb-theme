@@ -1,0 +1,1237 @@
+// Single Product Configurator
+// Transforms CPO's rendered form into a custom card/swatch UI.
+// All CPO show/hide, validation, and price calculation remain native.
+@use "sass:color";
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ==========================================================================
+// Local tokens
+// ==========================================================================
+
+$cfg-teal: $teal-accent; // #49c2cb — matches brand teal
+$cfg-bg: #f5f6f8;
+$cfg-module-even-bg: #f6f7f9;
+$cfg-card-radius: 4px;
+$cfg-card-border: #e0e3e8;
+$cfg-selected-border: $cfg-teal;
+$cfg-sidebar-width: 340px;
+$cfg-gap: 40px;
+$cfg-breakpoint: 960px;
+
+// ==========================================================================
+// Two-column grid
+// ==========================================================================
+
+.mdb-configurator {
+  display: grid;
+  grid-template-columns: 1fr $cfg-sidebar-width;
+  align-items: start;
+  gap: $cfg-gap;
+  padding-bottom: 3rem;
+
+  // On mobile the sidebar is a fixed bottom sheet, so give the steps
+  // enough bottom padding to keep the last option visible above the handle.
+  @media (max-width: $cfg-breakpoint) {
+    grid-template-columns: 1fr;
+    padding-bottom: 80px;
+  }
+}
+
+// ── Left column ────────────────────────────────────────────────────────────
+
+.mdb-configurator__steps {
+  min-width: 0; // prevent grid blowout
+
+  // Hide elements that are handled by the sidebar instead
+  .quantity {
+    display: none !important;
+  }
+  .single_add_to_cart_button {
+    display: none !important;
+  }
+
+  // CPO's builder adds an mdb-product-layout class to the form that makes it
+  // display:flex with an internal .mdb-product-sidebar — this overflows our
+  // left column, overlaps our sidebar, and intercepts clicks on option cards.
+  // Force block so all CPO rows stack vertically inside the left column.
+  form.cart {
+    display: block !important;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+  }
+
+  // Hide CPO's internal order-summary sidebar — we render our own on the right.
+  .mdb-product-sidebar {
+    display: none !important;
+  }
+
+  // Override CPO's internal row/column layout system so all CPO columns
+  // stack full-width inside our single left-column — prevents the flex rows
+  // the CPO builder creates from rendering as sub-columns on the page.
+  .uni-row-content-wrap,
+  .uni-row-content,
+  .uni-row-content-flex,
+  .uni-col-content,
+  [class^="uni-node-"] {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    float: none !important;
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  // Hide CPO's built-in price display module — we show price in the sidebar.
+  .uni-module-dynamic_notice {
+    display: none !important;
+  }
+
+  // Hide CPO text modules (e.g. "Configure and Order Below" heading) from
+  // appearing as a large styled card — they’re decorative builder elements.
+  .uni-module-text {
+    display: none !important;
+  }
+
+  #uni_cpo_options {
+    padding-top: 0.25rem;
+  }
+}
+
+// ── Right column ───────────────────────────────────────────────────────────
+
+// Desktop: sticky in the right grid column.
+// Mobile: fixed bottom sheet (“app drawer”) — collapsed to a 64 px handle
+// bar, expands to 85 vh on tap. Not part of the scroll flow on mobile.
+.mdb-configurator__sidebar {
+  position: sticky;
+  top: 100px; // clears sticky header on desktop
+
+  @media (max-width: $cfg-breakpoint) {
+    // Remove desktop sticky and switch to a fixed bottom sheet.
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    z-index: 200;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.14);
+    background: $white;
+    // Collapsed: only the 64 px handle bar is visible.
+    max-height: 154px;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+
+    &:not(.is-open) {
+      .mdb-order-summary {
+        display: none;
+      }
+    }
+
+    // Expanded: full order summary slides up.
+    &.is-open {
+      max-height: 85vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+
+      .mdb-order-summary {
+        display: block;
+      }
+    }
+  }
+}
+
+// ==========================================================================
+// Mobile bottom-sheet handle bar (hidden on desktop)
+// ==========================================================================
+
+.mdb-sidebar-handle {
+  display: none; // not needed on desktop
+
+  @media (max-width: $cfg-breakpoint) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    padding: 0 1.25rem;
+    border: none;
+    border-bottom: 1px solid $gray-200;
+    background: $white;
+    cursor: pointer;
+    gap: 0.5rem;
+    // Stays pinned at the top of the sheet as content inside scrolls.
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    &__label {
+      font-weight: $font-weight-semibold;
+      font-size: 0.95rem;
+      color: $gray-900;
+      flex-shrink: 0;
+    }
+
+    &__price {
+      flex: 1;
+      text-align: right;
+      font-weight: $font-weight-bold;
+      color: $cfg-teal;
+      font-size: 1.05rem;
+      .woocommerce-Price-amount,
+      bdi {
+        color: inherit;
+      }
+    }
+
+    // Chevron: points up (closed) → down (open)
+    &__icon {
+      flex-shrink: 0;
+      font-size: 1.4rem;
+      line-height: 1;
+      color: $gray-500;
+      transition: transform 0.3s ease;
+      transform: rotate(-90deg);
+    }
+  }
+}
+
+.mdb-sidebar-mobile-actions {
+  display: none;
+
+  @media (max-width: $cfg-breakpoint) {
+    display: block;
+    padding: 0.6rem 1rem 0.8rem;
+    background: $white;
+    border-bottom: 1px solid $gray-200;
+
+    .mdb-btn--addtocart-mobile {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: $cfg-breakpoint) {
+  // Chevron rotates when drawer is open.
+  .mdb-configurator__sidebar.is-open .mdb-sidebar-handle__icon {
+    transform: rotate(90deg);
+  }
+
+  .mdb-configurator__sidebar.is-open .mdb-sidebar-mobile-actions {
+    display: none;
+  }
+
+  .mdb-configurator__sidebar .mdb-order-summary__mobile-footer {
+    display: none;
+  }
+
+  // Inside the sheet the order-summary card loses its own shadow/radius
+  // (the sheet wrapper provides those).
+  .mdb-configurator__sidebar .mdb-order-summary {
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+// Semi-transparent backdrop rendered behind the open drawer.
+body.mdb-drawer-open::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 199; // below drawer (200), above page content
+}
+
+// ==========================================================================
+// Per-option step card wrapper
+// ==========================================================================
+
+.mdb-configurator__steps .uni-module {
+  background: $white;
+  border-radius: $cfg-card-radius;
+  // padding: 2rem;
+  margin-bottom: 1.5rem;
+  // box-shadow: 0 1px 6px rgba( 0, 0, 0, 0.06 );
+
+  // Hide CPO's own group label — we show it in .mdb-step-header.
+  // !important needed because CPO's product CSS sets font-size/weight !important
+  // on these labels which can accidentally un-hide them via specificity.
+  > [class^="uni-cpo-module-"] {
+    display: none !important;
+  }
+}
+
+.mdb-configurator__steps .mdb-summary-target-field {
+  outline: 2px solid rgba($cfg-teal, 0.82);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba($cfg-teal, 0.16);
+  transition: box-shadow 0.22s ease;
+}
+
+.mdb-configurator__steps label.uni-cpo-option-label.mdb-summary-target-field {
+  border-color: $cfg-teal !important;
+}
+
+.mdb-configurator__steps {
+  select.mdb-summary-target-field,
+  textarea.mdb-summary-target-field,
+  input.js-uni-cpo-field:not([type="radio"]).mdb-summary-target-field {
+    border-color: $cfg-teal !important;
+  }
+}
+
+// ==========================================================================
+// Step header (injected inside .uni-module by configurator.js)
+// ==========================================================================
+
+.mdb-step-header {
+  margin-bottom: 1.5rem;
+}
+
+.mdb-step-label {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $cfg-teal;
+  margin-bottom: 0.35rem;
+}
+
+.mdb-step-title {
+  font-size: 1.75rem;
+  font-weight: $font-weight-bold;
+  color: $gray-900;
+  margin: 0;
+  line-height: $line-height-tight;
+}
+
+.uni-cpo-option-label__image-wrap {
+  border: none !important; // override CPO product CSS
+}
+
+// ==========================================================================
+// Radio options — shared rules
+// ==========================================================================
+
+.uni-module-radio {
+  // Hide the real <input type="radio"> — label click drives selection
+  // via the for/id relationship; the input must stay in the DOM for CPO.
+  input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+// Shared card/swatch selected state ─────────────────────────────────────────
+
+// Because the <input> and <label> are flat siblings, CSS can target
+// input:checked + label without any JS intervention.
+.uni-module-radio input[type="radio"]:checked + .uni-cpo-option-label {
+  border-color: $cfg-selected-border;
+  box-shadow: 0 0 0 1px $cfg-selected-border;
+
+  &::after {
+    content: "✓";
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 26px;
+    height: 26px;
+    background: $cfg-selected-border;
+    color: $white;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: $font-weight-bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 1;
+  }
+}
+
+// ==========================================================================
+// Radio — image mode (Roller Blinds uses this: <img> + description text)
+// HTML: label > .uni-cpo-option-label__image-wrap > img.uni-cpo-option-label__image
+//             > .uni-cpo-option-label__description
+// JS injects .mdb-card-title from data-tip on the image-wrap.
+// ==========================================================================
+
+.uni-module-radio-image-mode {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+
+  > .mdb-step-header {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+  }
+  > [class^="uni-cpo-module-"] {
+    display: none !important;
+  }
+
+  // 4+ items: JS adds .mdb-grid--4col — use a 4-column layout.
+  &.mdb-grid--4col {
+    grid-template-columns: repeat(4, 1fr);
+
+    @media (max-width: 1100px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media (max-width: 700px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (max-width: 480px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    // Full-height image scales better than a fixed px value in 4 columns.
+    .uni-cpo-option-label__image {
+      height: 100%;
+    }
+  }
+
+  .uni-cpo-option-label {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $white;
+    border: 2px solid $cfg-card-border;
+    border-radius: $cfg-card-radius;
+    overflow: visible;
+    padding: 0 0 15px 0;
+    cursor: pointer;
+    // transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    position: relative;
+    // CPO product CSS sets a fixed width (e.g. width:158px) on labels.
+    // Override so labels always fill the grid column track.
+    width: auto !important;
+    min-width: 0;
+
+    &:hover {
+      border-color: color.adjust($cfg-card-border, $lightness: -12%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .uni-cpo-option-label__image-wrap {
+    display: block;
+    width: 100%;
+    background-color: $gray-100;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+    // No border-radius override here — CPO’s product CSS sets border-radius:100%
+    // for circle options (the default). Rectangular fields get .mdb-shape--rect
+    // added by JS and are targeted below.
+  }
+
+  // Rectangular shape: added by classifyImageShapes() when cpo_geom_radio != circle.
+  &.mdb-shape--rect {
+    .uni-cpo-option-label__image-wrap {
+      border-radius: 0 !important;
+    }
+    .uni-cpo-option-label__image {
+      border-radius: 0 !important;
+    }
+  }
+
+  .uni-cpo-option-label__image {
+    display: block;
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    object-position: center;
+    // Also override any border-radius CPO product CSS puts on the img itself.
+    border-radius: 0 !important;
+  }
+
+  // Title injected by configurator.js from data-tip attribute
+  .mdb-card-title {
+    display: block;
+    padding: 0.75rem 1rem 0;
+    font-weight: $font-weight-semibold;
+    font-size: 1rem;
+    color: $gray-900;
+    line-height: $line-height-tight;
+    text-align: center;
+  }
+
+  .uni-cpo-option-label__description {
+    display: block;
+    padding: 0.5rem 1rem 1rem;
+    font-size: 0.8rem;
+    color: $gray-600;
+    line-height: $line-height-normal;
+    flex: 1;
+  }
+
+  // "Please add image to suboption" placeholder
+  .uni-cpo-option-label__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $gray-400;
+    font-size: 0.75rem;
+    text-align: center;
+    padding: 1rem;
+  }
+}
+
+// ==========================================================================
+// Radio — classic mode (text labels with optional background-image)
+// ==========================================================================
+
+.uni-module-radio-classic-mode {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+
+  > .mdb-step-header {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+  }
+  > [class^="uni-cpo-module-"] {
+    display: none !important;
+  }
+
+  .uni-cpo-option-label {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $white;
+    border: 2px solid $cfg-card-border;
+    border-radius: $cfg-card-radius;
+    overflow: hidden;
+    cursor: pointer;
+    // transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    position: relative;
+
+    &:hover {
+      border-color: color.adjust($cfg-card-border, $lightness: -12%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .uni-cpo-option-label__radio {
+    display: block;
+    width: 100%;
+    padding-bottom: 55%;
+    background-color: $gray-100;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+  }
+
+  .uni-cpo-option-label__text {
+    padding: 1rem 1rem 0.75rem;
+    font-weight: $font-weight-semibold;
+    font-size: 1rem;
+    color: $gray-900;
+    line-height: $line-height-tight;
+  }
+
+  .uni-cpo-option-label__description {
+    display: block;
+    font-weight: $font-weight-normal;
+    font-size: 0.8rem;
+    color: $gray-600;
+    margin-top: 0.5rem;
+    line-height: $line-height-normal;
+    flex: 1;
+  }
+}
+
+// ==========================================================================
+// Radio — colour / swatch mode
+// ==========================================================================
+
+.uni-module-radio-colour-mode {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+
+  @media (max-width: 700px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  > .mdb-step-header {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+  }
+  > [class^="uni-cpo-module-"] {
+    display: none !important;
+  }
+
+  .uni-cpo-option-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    background: $white;
+    border: 2px solid $cfg-card-border;
+    border-radius: $cfg-card-radius;
+    padding: 1rem 0.5rem 0.85rem;
+    cursor: pointer;
+    // transition: border-color 0.18s ease;
+    position: relative;
+
+    &:hover {
+      border-color: color.adjust($cfg-card-border, $lightness: -12%);
+    }
+  }
+
+  .uni-cpo-option-label__radio {
+    display: block;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 0.75rem;
+    background-color: $gray-200;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+  }
+
+  .uni-cpo-option-label__text {
+    font-size: 0.875rem;
+    font-weight: $font-weight-semibold;
+    color: $gray-900;
+    line-height: 1.3;
+  }
+
+  .uni-cpo-option-label__description {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: $font-weight-normal;
+    color: $gray-500;
+    margin-top: 0.2rem;
+    flex: 1;
+  }
+
+  input[type="radio"]:checked + .uni-cpo-option-label::after {
+    top: auto;
+    right: auto;
+    bottom: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+  }
+}
+
+// ==========================================================================
+// Select options
+// ==========================================================================
+
+.uni-module-select {
+  select.js-uni-cpo-field {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border: 2px solid $cfg-card-border;
+    border-radius: 4px;
+    background-color: $white;
+    // SVG chevron
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23444d62' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    appearance: none;
+    font-size: 0.95rem;
+    color: $gray-900;
+    cursor: pointer;
+    // transition: border-color 0.18s;
+
+    &:focus {
+      outline: none;
+      border-color: $cfg-teal;
+    }
+  }
+
+  &.mdb-module--completed select.js-uni-cpo-field {
+    border-color: $cfg-selected-border;
+    box-shadow: 0 0 0 1px $cfg-selected-border;
+  }
+}
+
+// ==========================================================================
+// Text / Number inputs
+// ==========================================================================
+
+.uni-module-text_input,
+.uni-module-number {
+  input.js-uni-cpo-field {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    padding: 0.75rem 1rem;
+    border: 2px solid $cfg-card-border;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: $gray-900;
+    background: $white;
+    // transition: border-color 0.18s;
+
+    &:focus {
+      outline: none;
+      border-color: $cfg-teal;
+    }
+  }
+
+  &.mdb-module--completed input.js-uni-cpo-field {
+    border-color: $cfg-selected-border !important;
+    box-shadow: 0 0 0 1px $cfg-selected-border !important;
+  }
+}
+
+// ==========================================================================
+// Textarea
+// ==========================================================================
+
+.uni-module-text_area {
+  textarea.js-uni-cpo-field {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    min-height: 120px;
+    padding: 0.75rem 1rem;
+    border: 2px solid $cfg-card-border;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: $gray-900;
+    background: $white;
+    resize: vertical;
+    // transition: border-color 0.18s;
+
+    &:focus {
+      outline: none;
+      border-color: $cfg-teal;
+    }
+  }
+
+  &.mdb-module--completed textarea.js-uni-cpo-field {
+    border-color: $cfg-selected-border;
+    box-shadow: 0 0 0 1px $cfg-selected-border;
+  }
+}
+
+// ==========================================================================
+// Range slider
+// ==========================================================================
+
+.uni-module-range_slider {
+  input[type="range"] {
+    width: 100%;
+    max-width: 400px;
+    accent-color: $cfg-teal;
+  }
+}
+
+// ==========================================================================
+// Order Summary sidebar card
+// ==========================================================================
+
+.mdb-order-summary {
+  background: $white;
+  border-radius: $cfg-card-radius;
+  // box-shadow: 0 2px 16px rgba( 0, 0, 0, 0.08 );
+  border: 1px solid $gray-400;
+  padding: 1.75rem;
+
+  @media ( min-width: #{ $cfg-breakpoint + 1px } ) {
+    max-height: calc(100vh - 104px);
+    max-height: calc(100dvh - 104px);
+    overflow-y: hidden;
+    overflow-x: visible;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    &.mdb-order-summary--desktop-scroll-enabled:hover,
+    &.mdb-order-summary--desktop-scroll-enabled:focus-within {
+      overflow-y: auto;
+    }
+  }
+}
+
+.mdb-order-summary__heading {
+  font-size: 1.5rem;
+  font-weight: $font-weight-bold;
+  color: $gray-900;
+  margin: 0 0 1rem;
+}
+
+.mdb-order-summary__rule {
+  border: none;
+  border-top: 1px solid $gray-200;
+  margin: 1rem 0;
+
+  &--pre-total {
+    margin-top: 1.5rem;
+  }
+}
+
+.mdb-order-summary__product-name {
+  font-size: 1rem;
+  font-weight: $font-weight-semibold;
+  color: $gray-900;
+  margin: 0 0 1rem;
+}
+
+// Summary list — label + bold value pairs
+.mdb-order-summary__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mdb-order-summary__skeleton {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+}
+
+.mdb-summary-skeleton-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.7rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mdb-summary-skeleton-item__label,
+.mdb-summary-skeleton-item__value {
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba($gray-200, 0.75) 0%,
+    rgba($gray-300, 0.9) 50%,
+    rgba($gray-200, 0.75) 100%
+  );
+  background-size: 220% 100%;
+  animation: mdb-summary-skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+.mdb-summary-skeleton-item__label {
+  height: 0.68rem;
+  width: 78%;
+}
+
+.mdb-summary-skeleton-item__value {
+  height: 0.84rem;
+  width: 58%;
+}
+
+@keyframes mdb-summary-skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdb-summary-skeleton-item__label,
+  .mdb-summary-skeleton-item__value {
+    animation: none;
+  }
+}
+
+.mdb-options-toggle-btn--summary {
+  display: none;
+}
+
+.mdb-options-toggle-btn--summary.is-loading {
+  opacity: 0.58;
+  cursor: wait;
+  pointer-events: none;
+}
+
+@media ( min-width: #{ $cfg-breakpoint + 1px } ) {
+  .mdb-options-toggle-btn--summary.is-desktop-overflow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.15rem 0 0.55rem;
+    padding: 0.25rem 0.65rem;
+    width: 100%;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: $gray-700;
+    background: $gray-100;
+    border: 1px solid $gray-300;
+    border-radius: 4px;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+
+    .mdb-options-toggle-btn__icon {
+      display: inline-block;
+      font-size: 0.95rem;
+      line-height: 1;
+      margin-left: auto;
+      transition: transform 0.2s ease;
+      transform: rotate(90deg);
+    }
+
+    &.active {
+      color: $primary-dark;
+      border-color: $primary-light;
+      background: rgba($primary-color, 0.08);
+
+      .mdb-options-toggle-btn__icon {
+        transform: rotate(-90deg);
+      }
+    }
+
+    &:hover:not(.active) {
+      background: $gray-200;
+      border-color: $gray-400;
+    }
+  }
+
+  .mdb-order-summary__list.is-collapsed .mdb-summary-item:nth-child(n + 6) {
+    display: none;
+  }
+}
+
+.mdb-options-wrapper--summary {
+  display: block;
+
+  &.is-loading {
+    .mdb-order-summary__skeleton {
+      display: block;
+    }
+
+    .mdb-order-summary__list {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: $cfg-breakpoint) {
+  .mdb-options-toggle-btn--summary {
+    display: none !important;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.15rem 0 0.45rem;
+    padding: 0.25rem 0.65rem;
+    width: 100%;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: $gray-700;
+    background: $gray-100;
+    border: 1px solid $gray-300;
+    border-radius: 4px;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+
+    .mdb-options-toggle-btn__icon {
+      display: inline-block;
+      font-size: 0.95rem;
+      line-height: 1;
+      margin-left: auto;
+      transition: transform 0.2s ease;
+      transform: rotate(-90deg);
+    }
+
+    &.active {
+      color: $primary-dark;
+      border-color: $primary-light;
+      background: rgba($primary-color, 0.08);
+
+      .mdb-options-toggle-btn__icon {
+        transform: rotate(90deg);
+      }
+    }
+
+    &:hover:not(.active) {
+      background: $gray-200;
+      border-color: $gray-400;
+    }
+  }
+
+  .mdb-options-wrapper--summary {
+    display: block !important;
+    margin-top: 0.35rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: $white;
+  }
+
+  .mdb-order-summary__list {
+    font-size: inherit;
+  }
+
+  // Expanded drawer focuses on selected options only.
+  .mdb-configurator__sidebar.is-open {
+    .mdb-order-summary__heading,
+    .mdb-order-summary__rule,
+    .mdb-order-summary__product-name,
+    .mdb-order-summary__total-row,
+    .mdb-order-summary__actions,
+    .mdb-payment-icons {
+      display: none;
+    }
+
+    .mdb-order-summary {
+      padding: 1rem;
+    }
+
+    .mdb-order-summary__mobile-footer {
+      display: block;
+      position: sticky;
+      bottom: 0;
+      padding-top: 0.85rem;
+      margin-top: 0.95rem;
+      background: linear-gradient(180deg, rgba($white, 0.85) 0%, $white 35%);
+      border-top: 1px solid $gray-200;
+
+      .mdb-btn--addtocart-mobile-bottom {
+        padding: 0.85rem 1rem;
+        font-size: 0.92rem;
+      }
+    }
+  }
+}
+
+.mdb-summary-item {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #ececec;
+  padding: 3px 0;
+  // margin-bottom: 0.7rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mdb-summary-item__label {
+  font-size: 0.8rem;
+  color: $gray-600;
+  font-weight: $font-weight-normal;
+  line-height: 1.1;
+}
+
+.mdb-summary-item__value {
+  font-size: 0.8rem;
+  font-weight: $font-weight-bold;
+  color: $gray-900;
+  line-height: 1.1;
+  // margin-top: 0.1rem;
+}
+
+.mdb-summary-item__value--pending {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: $font-weight-semibold;
+  line-height: 1.1;
+  color: $gray-600;
+  // margin-top: 0.1rem;
+  text-align: left;
+//   text-decoration: underline;
+  // text-underline-offset: 0.16em;
+  cursor: pointer;
+  color: $cfg-teal;
+}
+
+// Total price row
+.mdb-order-summary__total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 1.25rem 0 1.5rem;
+  font-size: 0.95rem;
+  color: $gray-800;
+  font-weight: $font-weight-medium;
+}
+
+.mdb-total-price {
+  font-size: 1.5rem;
+  font-weight: $font-weight-bold;
+  color: $cfg-teal;
+
+  // Keep WC's inner amount spans from overriding the teal colour
+  .woocommerce-Price-amount,
+  bdi {
+    color: inherit;
+  }
+}
+
+// ==========================================================================
+// Action buttons
+// ==========================================================================
+
+.mdb-order-summary__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+// Mobile-only sticky footer action (hidden by default / desktop).
+.mdb-order-summary__mobile-footer {
+  display: none;
+}
+
+.mdb-btn {
+  display: block;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid transparent;
+  line-height: 1;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+
+  &--calculate {
+    background: $white;
+    color: $gray-800;
+    border-color: $gray-300;
+
+    &:hover {
+      border-color: $gray-700;
+      color: $gray-900;
+    }
+  }
+
+  &--addtocart {
+    background: $cfg-teal;
+    color: $white;
+    border-color: $cfg-teal;
+
+    &:hover {
+      background: color.adjust($cfg-teal, $lightness: -8%);
+      border-color: color.adjust($cfg-teal, $lightness: -8%);
+    }
+  }
+}
+
+// ==========================================================================
+// Payment icons row (text placeholders — replace with SVGs when available)
+// ==========================================================================
+
+.mdb-payment-icons {
+  border-top: 1px solid $gray-200;
+  padding-top: 1rem;
+}
+
+.mdb-payment-icons__label {
+  font-size: 0.72rem;
+  color: $gray-500;
+  margin: 0 0 0.5rem;
+}
+
+.mdb-payment-icons__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mdb-payment-icon {
+  font-size: 0.62rem;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.03em;
+  color: $gray-600;
+  border: 1px solid $gray-300;
+  border-radius: 4px;
+  padding: 0.2rem 0.45rem;
+  background: $white;
+}
+
+// ==========================================================================
+// Parsley validation errors — match theme error colour
+// ==========================================================================
+
+.mdb-configurator__steps {
+  .parsley-errors-list {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    font-size: 0.8rem;
+    color: $error-color;
+
+    li {
+      margin-bottom: 0.2rem;
+    }
+  }
+}
+
+.uni-builderius-container *::before {
+  display: none !important;
+}

@@ -11,7 +11,7 @@
     "dev": "npm run sass:watch"
   },
   "devDependencies": {
-    "sass": "^1.69.0"
+    "sass": "^1.101.0"
   },
   "keywords": [
     "wordpress",
@@ -19,6 +19,6 @@
     "scss",
     "sass"
   ],
-  "author": "Your Name",
+  "author": "David Vidovic",
   "license": "GPL-3.0"
 }

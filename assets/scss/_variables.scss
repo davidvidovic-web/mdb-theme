@@ -108,7 +108,7 @@ $footer-height: 200px;
 
 $border-width: 1px;
 $border-radius: 4px;
-$border-radius-lg: 8px;
+$border-radius-lg: 4px;
 $border-color: $gray-300;
 
 // ==========================================================================
@@ -166,4 +166,7 @@ $transition-easing: ease-in-out;
 //     USED IN: layout/_header.scss       →  body.mdb-cart-open { padding-right: var(--mdb-scrollbar-width, 0px) }
 //              components/_mini-cart-panel.scss  →  body.mdb-cart-open { padding-right: var(--mdb-scrollbar-width, 0px) }
 //     PURPOSE: Compensates for scrollbar disappearing when the cart panel locks body scroll.
+//     CHANGED TO STATIC VARIABLE to reduce LCP
 // --------------------------------------------------------------------------
+
+$sticky-header-height: 47px;

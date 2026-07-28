@@ -21,9 +21,28 @@ function mdb_theme_hide_hello_biz_base_styles( $hide ) {
 add_filter( 'hello-plus-theme/settings/hello_theme', 'mdb_theme_hide_hello_biz_base_styles' );
 
 /**
+ * Detect whether the current request is the Uni CPO builder view.
+ *
+ * @return bool
+ */
+function mdb_is_cpo_builder_request() {
+	if ( ! isset( $_GET['cpo_options'] ) ) {
+		return false;
+	}
+
+	$flag = sanitize_text_field( wp_unslash( $_GET['cpo_options'] ) );
+
+	return '1' === $flag;
+}
+
+/**
  * Enqueue child theme styles
  */
 function hello_biz_child_enqueue_styles() {
+	if ( mdb_is_cpo_builder_request() ) {
+		return;
+	}
+
 	// Build dependency list — always after the parent header/footer layer and after every
 	// WooCommerce stylesheet that is actually registered on this request.
 	// This guarantees our overrides cascade on top of WC defaults regardless
@@ -65,6 +84,10 @@ add_action( 'wp_enqueue_scripts', 'hello_biz_child_enqueue_styles', 99 );
  * Enqueue JavaScript files
  */
 function hello_biz_child_enqueue_scripts() {
+	if ( mdb_is_cpo_builder_request() ) {
+		return;
+	}
+
 	// Enqueue custom JavaScript
 	$custom_js_path = get_stylesheet_directory() . '/assets/js/custom.js';
 	wp_enqueue_script(
@@ -75,12 +98,151 @@ function hello_biz_child_enqueue_scripts() {
 		true
 	);
 
+	// Configurator — single product wizard. Only loaded on product pages so
+	// it does not add weight to any other page.
+	if ( is_singular( 'product' ) ) {
+		$configurator_path = get_stylesheet_directory() . '/assets/js/configurator.js';
+		wp_enqueue_script(
+			'mdb-configurator',
+			get_stylesheet_directory_uri() . '/assets/js/configurator.js',
+			// uni-cpo-frontend must be listed so WP outputs it before our script,
+			// guaranteeing unicpoAllOptions is defined when our ready handler runs.
+			array( 'jquery', 'uni-cpo-frontend' ),
+			file_exists( $configurator_path ) ? filemtime( $configurator_path ) : wp_get_theme()->get( 'Version' ),
+			true
+		);
+
+		// Export per-option image-shape data so the configurator JS can add
+		// mdb-shape--circle to the appropriate module wrappers.
+		mdb_inline_cpo_shapes();
+	}
+
 	// Pass AJAX URL to front-end JS.
 	wp_localize_script( 'mdb-theme-custom', 'mdbAjax', array(
 		'url' => admin_url( 'admin-ajax.php' ),
 	) );
 }
 add_action( 'wp_enqueue_scripts', 'hello_biz_child_enqueue_scripts' );
+
+/**
+ * Route Uni CPO calculated price updates into the custom configurator sidebar.
+ *
+ * Uni CPO reads this selector during its own JS init and caches the matched
+ * element, so this must be set in PHP (before frontend.js runs) rather than
+ * overridden later in custom JavaScript.
+ *
+ * @param array|string $selectors Existing selectors from Uni CPO.
+ * @return array
+ */
+function mdb_uni_cpo_price_selector( $selectors ) {
+	if ( mdb_is_cpo_builder_request() ) {
+		return $selectors;
+	}
+
+	if ( ! is_singular( 'product' ) ) {
+		return is_array( $selectors ) ? $selectors : array();
+	}
+
+	if ( is_string( $selectors ) ) {
+		$selectors = array_map( 'trim', explode( ',', $selectors ) );
+	}
+
+	if ( ! is_array( $selectors ) ) {
+		$selectors = array();
+	}
+
+	array_unshift( $selectors, '#mdb-total-price' );
+
+	$selectors = array_values( array_unique( array_filter( $selectors, function ( $el ) {
+		return is_string( $el ) && '' !== trim( $el );
+	} ) ) );
+
+	return $selectors;
+}
+add_filter( 'uni_cpo_price_selector', 'mdb_uni_cpo_price_selector' );
+
+/**
+ * Walk a CPO builder content array and return a slug => cpo_geom_radio map.
+ *
+ * @param array  $nodes    Top-level content array or recursive child array.
+ * @param array  $shapes   Accumulated map (pass by reference via return).
+ * @param string $var_slug CPO variable prefix (e.g. "uni_cpo_").
+ * @return array
+ */
+function mdb_walk_cpo_nodes( array $nodes, array $shapes, $var_slug ) {
+	foreach ( $nodes as $node ) {
+		if ( ! is_array( $node ) ) {
+			continue;
+		}
+		if ( ! empty( $node['columns'] ) && is_array( $node['columns'] ) ) {
+			$shapes = mdb_walk_cpo_nodes( $node['columns'], $shapes, $var_slug );
+		}
+		if ( ! empty( $node['modules'] ) && is_array( $node['modules'] ) ) {
+			$shapes = mdb_walk_cpo_nodes( $node['modules'], $shapes, $var_slug );
+		}
+		if ( isset( $node['obj_type'] ) && 'option' === $node['obj_type'] ) {
+			$raw_slug = isset( $node['settings']['cpo_general']['main']['cpo_slug'] )
+				? (string) $node['settings']['cpo_general']['main']['cpo_slug']
+				: '';
+			$geom = isset( $node['settings']['cpo_general']['main']['cpo_geom_radio'] )
+				? (string) $node['settings']['cpo_general']['main']['cpo_geom_radio']
+				: '';
+			if ( '' !== $raw_slug && '' !== $geom ) {
+				$shapes[ $var_slug . $raw_slug ] = $geom;
+			}
+		}
+	}
+	return $shapes;
+}
+
+/**
+ * Inline mdbCpoShapes as a JS variable before configurator.js runs.
+ * Maps each CPO option slug to its cpo_geom_radio value ('circle'|'square').
+ */
+function mdb_inline_cpo_shapes() {
+	if ( ! class_exists( 'UniCpo' ) || ! function_exists( 'UniCpo' ) ) {
+		return;
+	}
+
+	$post_id = get_the_ID();
+	if ( ! $post_id ) {
+		return;
+	}
+
+	$raw_content = get_post_meta( $post_id, '_cpo_content', true );
+	if ( empty( $raw_content ) ) {
+		return;
+	}
+
+	$decoded = base64_decode( (string) $raw_content, true );
+	if ( false === $decoded ) {
+		return;
+	}
+
+	$content = maybe_unserialize( $decoded );
+	if ( ! is_array( $content ) ) {
+		return;
+	}
+
+	$var_slug = UniCpo()->get_var_slug();
+	$shapes   = mdb_walk_cpo_nodes( $content, array(), $var_slug );
+
+	// Only keep non-circle entries — circles are CPO's default so no JS class
+	// is needed for them. This keeps the inline payload as small as possible.
+	$shapes = array_filter( $shapes, function( $geom ) {
+		return 'circle' !== $geom;
+	} );
+
+	if ( empty( $shapes ) ) {
+		return;
+	}
+
+	wp_add_inline_script(
+		'mdb-configurator',
+		'var mdbCpoShapes = ' . wp_json_encode( $shapes ) . ';',
+		'before'
+	);
+}
 
 /**
  * Enqueue admin styles and scripts

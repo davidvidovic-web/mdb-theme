@@ -69,6 +69,77 @@ body.woocommerce-checkout,
                     color: $primary-color;
                 }
             }
+
+            .mdb-options-toggle-btn--table {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                margin-top: 0.4rem;
+                padding: 0.25rem 0.65rem;
+                width: 100%;
+                justify-content: space-between;
+                text-align: left;
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 0.02em;
+                color: $gray-700;
+                background: $gray-100;
+                border: 1px solid $gray-300;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+                .mdb-chevron {
+                    display: inline-block;
+                    margin-left: auto;
+                    transition: transform 0.2s ease;
+                    flex-shrink: 0;
+                }
+
+                &.active {
+                    color: $primary-dark;
+                    border-color: $primary-light;
+                    background: rgba($primary-color, 0.08);
+
+                    .mdb-chevron {
+                        transform: rotate(180deg);
+                    }
+                }
+
+                &:hover:not(.active) {
+                    background: $gray-200;
+                    border-color: $gray-400;
+                }
+            }
+
+            .mdb-options-wrapper--table {
+                margin-top: 0.45rem;
+                padding: 0.65rem 0.75rem;
+                border: 1px solid $gray-200;
+                border-radius: 4px;
+                background: $gray-100;
+
+                dl.variation {
+                    margin: 0 !important;
+                    font-size: 0.8rem;
+
+                    dt {
+                        font-weight: 600;
+                        color: $gray-800 !important;
+                        margin: 0.15rem 0 0 !important;
+                    }
+
+                    dd {
+                        margin: 0 !important;
+                        color: $gray-600 !important;
+
+                        p {
+                            margin: 0 !important;
+                            line-height: inherit;
+                        }
+                    }
+                }
+            }
         }
         
         // Product Price
@@ -104,7 +175,7 @@ body.woocommerce-checkout,
         
         table.shop_table {
             border: 1px solid $gray-200;
-            border-radius: 8px;
+            border-radius: 4px;
             
             th {
                 color: $secondary-color;
@@ -135,7 +206,7 @@ body.woocommerce-checkout,
         padding: 1.5rem;
         background-color: rgba($primary-color, 0.05);
         border: 1px dashed $primary-light;
-        border-radius: 8px;
+        border-radius: 4px;
         margin-bottom: 1.5rem;
         
         label {
@@ -144,7 +215,7 @@ body.woocommerce-checkout,
         
         .input-text {
             border: 1px solid $gray-300;
-            border-radius: 6px;
+            border-radius: 4px;
             padding: 0.75rem 1rem;
             flex: 1;
             min-width: 200px;
@@ -161,7 +232,7 @@ body.woocommerce-checkout,
             background-color: $primary-dark !important;
             color: $white !important;
             border: none !important;
-            border-radius: 6px !important;
+            border-radius: 4px !important;
             padding: 0.75rem 1.5rem !important;
             font-weight: 600 !important;
             text-transform: uppercase;
@@ -179,7 +250,7 @@ body.woocommerce-checkout,
         border: 1px dashed $primary-light;
         padding: 1.5rem;
         background-color: rgba($primary-color, 0.02);
-        border-radius: 8px;
+        border-radius: 4px;
         margin-bottom: 2rem;
         
         p {
@@ -188,7 +259,7 @@ body.woocommerce-checkout,
         
         .input-text {
             border: 1px solid $gray-300;
-            border-radius: 6px;
+            border-radius: 4px;
             padding: 0.75rem 1rem;
             width: 100%;
             margin-bottom: 1rem;
@@ -203,7 +274,7 @@ body.woocommerce-checkout,
         button.button {
             background-color: $primary-dark !important;
             color: $white !important;
-            border-radius: 6px !important;
+            border-radius: 4px !important;
             padding: 0.75rem 1.5rem !important;
             font-weight: 600 !important;
             text-transform: uppercase;
@@ -237,7 +308,7 @@ body.woocommerce-checkout,
     .woocommerce-message {
         border-top-color: $success-color;
         background-color: rgba($success-color, 0.05);
-        color: scale-color($success-color, $lightness: -20%);
+        color: color.scale($success-color, $lightness: -20%);
         
         &::before {
             color: $success-color;
@@ -247,7 +318,7 @@ body.woocommerce-checkout,
     .woocommerce-error {
         border-top-color: $error-color;
         background-color: rgba($error-color, 0.05);
-        color: scale-color($error-color, $lightness: -20%);
+        color: color.scale($error-color, $lightness: -20%);
         
         &::before {
             color: $error-color;
@@ -278,7 +349,7 @@ body.woocommerce-checkout,
                 textarea,
                 select {
                     border: 1px solid $gray-300;
-                    border-radius: 6px;
+                    border-radius: 4px;
                     padding: 0.75rem;
                     background-color: $white;
                     color: $gray-800;
@@ -295,7 +366,7 @@ body.woocommerce-checkout,
         // Checkout Order Review Product Details
         #order_review {
             table.shop_table {
-                border-radius: 8px;
+                border-radius: 4px;
                 border: 1px solid $primary-light;
                 overflow: hidden;
                 
@@ -346,7 +417,7 @@ body.woocommerce-checkout,
             // Payment Methods
             #payment {
                 background-color: $gray-100;
-                border-radius: 8px;
+                border-radius: 4px;
                 padding: 1.5rem;
                 border: 1px solid $gray-200;
                 
@@ -383,7 +454,7 @@ body.woocommerce-checkout,
                         color: $white !important;
                         font-size: 1.25rem !important;
                         padding: 1rem 2rem !important;
-                        border-radius: 8px !important;
+                        border-radius: 4px !important;
                         font-weight: 700 !important;
                         text-transform: uppercase;
                         box-shadow: 0 4px 15px rgba($accent-color, 0.3) !important;
@@ -399,6 +470,81 @@ body.woocommerce-checkout,
                     }
                 }
             }
+        }
+    }
+}
+
+// WooCommerce Blocks cart + checkout: config toggle UI for product details.
+.wc-block-cart,
+.wc-block-checkout {
+    .mdb-options-toggle-btn--blocks {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-top: 0.4rem;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: $gray-700;
+        background: $gray-100;
+        border: 1px solid $gray-300;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+        .mdb-chevron {
+            display: inline-block;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        &.active {
+            color: $primary-dark;
+            border-color: $primary-light;
+            background: rgba($primary-color, 0.08);
+
+            .mdb-chevron {
+                transform: rotate(180deg);
+            }
+        }
+
+        &:hover:not(.active) {
+            background: $gray-200;
+            border-color: $gray-400;
+        }
+    }
+
+    .mdb-options-wrapper--blocks {
+        margin-top: 0.45rem;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid $gray-200;
+        border-radius: 4px;
+        background: $gray-100;
+
+        .wc-block-components-product-details {
+            display: block;
+            margin: 0;
+            font-size: 0.8rem;
+        }
+
+        .wc-block-components-product-details > span {
+            display: block;
+            margin: 0.2rem 0;
+        }
+
+        .wc-block-components-product-details__name {
+            font-weight: 600;
+            color: $gray-800;
+            margin-right: 0.25rem;
+        }
+
+        .wc-block-components-product-details__value {
+            color: $gray-600;
+        }
+
+        .wc-block-components-product-details > span > span[aria-hidden='true'] {
+            display: none;
         }
     }
 }
@@ -427,7 +573,7 @@ body.woocommerce-checkout,
         margin: 0;
         
         img {
-            border-radius: 8px;
+            border-radius: 4px;
             border: 1px solid $gray-200;
             width: 100%;
             height: auto;
@@ -469,7 +615,7 @@ body.woocommerce-checkout,
         text-align: left;
         background: rgba($primary-color, 0.05);
         padding: 0.25rem 0.75rem;
-        border-radius: 20px;
+        border-radius: 4px;
         display: inline-flex;
         align-self: start;
         justify-self: start;
@@ -491,7 +637,7 @@ body.woocommerce-checkout,
         border: 1px solid $gray-300;
         color: $gray-700;
         padding: 0.5rem 1rem;
-        border-radius: 6px;
+        border-radius: 4px;
         font-size: 0.85rem;
         font-weight: 600;
         cursor: pointer;
@@ -528,7 +674,7 @@ body.woocommerce-checkout,
         grid-row: 4;
         width: 100%;
         background: $gray-100;
-        border-radius: 6px;
+        border-radius: 4px;
         padding: 1rem;
         border: 1px solid $gray-200;
         margin-top: 0.25rem;
@@ -663,7 +809,7 @@ body.woocommerce-checkout,
             flex: 1;
             justify-content: center;
             padding: 0.85rem 1rem !important;
-            border-radius: 6px !important;
+            border-radius: 4px !important;
             font-weight: 600 !important;
             text-transform: uppercase;
             font-size: 0.9rem !important;

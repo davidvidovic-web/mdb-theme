@@ -2,6 +2,7 @@
 // Custom Sticky Header
 // Fully custom — zero Elementor classes. JS builds the HTML from scraped data.
 // =============================================================================
+@use "sass:color";
 @use "../variables" as *;
 @use "../mixins" as *;
 
@@ -63,7 +64,7 @@
     width: 48px;
     height: 48px;
     display: block;
-    border-radius: 6px;
+    border-radius: 4px;
     object-fit: contain;
   }
 }
@@ -142,13 +143,13 @@
 // -----------------------------------------------------------------------------
 .mdb-snav-dropdown {
   position: fixed;
-  top: var(--sticky-header-height, 66px);
+  top: $sticky-header-height;
   left: 50%;
   transform: translateX(-50%);
   background: $white;
-  border-top: 3px solid $primary-color;
+  // border-top: 3px solid $primary-color;
   box-shadow: 0 8px 32px rgba($black, 0.13);
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 4px 4px;
   padding: 1.5rem 2rem;
   z-index: 99998;
   // Width is driven by content; min/max keep it readable
@@ -246,7 +247,7 @@
   font-weight: 700;
   text-transform: uppercase;
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 4px;
   border: none;
   cursor: pointer;
   font-family: inherit;
@@ -258,7 +259,7 @@
 
   &:hover,
   &:focus {
-    background: scale-color($primary-light, $lightness: -10%);
+    background: color.scale($primary-light, $lightness: -10%);
     color: $white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba($primary-light, 0.4);
@@ -285,13 +286,13 @@
   font-weight: 700;
   text-transform: uppercase;
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 4px;
   white-space: nowrap;
   letter-spacing: 0.03em;
   transition: background-color 0.2s ease, transform 0.15s ease;
 
   &:hover {
-    background: scale-color($primary-light, $lightness: -10%);
+    background: color.scale($primary-light, $lightness: -10%);
     transform: translateY(-1px);
   }
 }
@@ -333,7 +334,7 @@
   font-size: 0.65rem;
   font-weight: 700;
   line-height: 1;
-  border-radius: 9px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
